@@ -228,6 +228,108 @@ header span {
   }
 }
 
+/* =========================================================
+   BLOCO 2A — MELHORIAS VISUAIS DO HERO (100% aditivo)
+   Nada acima foi removido ou alterado. Estas regras só
+   adicionam glow, profundidade e entrada suave por cima
+   dos efeitos originais do hero.
+========================================================= */
+
+/* 2. Halo dourado pequeno e concentrado atrás da foto (não altera tamanho/proporção/posição/border-radius da foto) */
+.hero-img {
+  position: relative;
+}
+
+.hero-img::before {
+  content: "";
+  position: absolute;
+  inset: -10px;
+  z-index: -1;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle,
+    rgba(212, 175, 55, 0.30) 0%,
+    rgba(212, 175, 55, 0.12) 55%,
+    rgba(212, 175, 55, 0) 78%
+  );
+  filter: blur(14px);
+  animation: heroPhotoGlow 8s ease-in-out infinite;
+}
+
+@keyframes heroPhotoGlow {
+  0%, 100% {
+    opacity: 0.55;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.8;
+    transform: scale(1.02);
+  }
+}
+
+/* 4. Profundidade extra na foto via sombra (não altera largura/altura/proporção) */
+.hero-img img {
+  box-shadow:
+    0 25px 50px -12px rgba(0, 0, 0, 0.6),
+    0 0 40px rgba(212, 175, 55, 0.18);
+  transition: box-shadow 0.4s ease;
+}
+
+/* 6. Realce discreto no hover da foto, sem alterar o tamanho */
+.hero-img:hover img {
+  box-shadow:
+    0 30px 60px -12px rgba(0, 0, 0, 0.65),
+    0 0 55px rgba(212, 175, 55, 0.3);
+}
+
+/* 5. Entrada suave dos elementos do hero ao carregar a página
+   (roda junto com o .active já aplicado pelo IntersectionObserver
+   existente; não interfere no .reveal usado em outras seções) */
+.hero.reveal.active .hero-text {
+  animation: heroTextEnter 0.9s ease both;
+}
+
+.hero.reveal.active .hero-img {
+  animation: heroImgFadeIn 0.9s ease 0.2s both;
+}
+
+.hero.reveal.active .hero-img img {
+  animation: heroPhotoEnter 1s cubic-bezier(.22,.9,.32,1) 0.25s both;
+}
+
+@keyframes heroTextEnter {
+  from {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes heroImgFadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes heroPhotoEnter {
+  from {
+    opacity: 0;
+    transform: scale(0.92);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@media (max-width: 900px) {
+  .hero-img::before {
+    inset: -8px;
+  }
+}
+
 /* SEÇÕES */
 section {
   padding: 80px 20px;
