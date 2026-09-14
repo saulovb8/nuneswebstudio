@@ -1,36 +1,63 @@
-const box = document.querySelector(".premium-box");
-const glow = document.querySelector(".border-glow");
+/* ACORDEÃO — ENTENDA CADA SERVIÇO (abre um item por vez) */
+const guideQuestions = document.querySelectorAll(".guide-question");
 
-if (box && glow) {
+guideQuestions.forEach(question => {
 
-    let animation;
+  question.addEventListener("click", () => {
 
-    box.addEventListener("mouseenter", () => {
+    const item = question.parentElement;
+    const isActive = item.classList.contains("active");
 
-        glow.style.opacity = "1";
+    document.querySelectorAll(".guide-item").forEach(el => {
+      el.classList.remove("active");
+      el.querySelector(".guide-question").setAttribute("aria-expanded", "false");
+      el.querySelector(".guide-question span[aria-hidden]").textContent = "+";
+    });
 
-        animation = glow.animate([
-            { left: "0px", top: "0px" },
-            { left: "calc(100% - 10px)", top: "0px" },
-            { left: "calc(100% - 10px)", top: "calc(100% - 10px)" },
-            { left: "0px", top: "calc(100% - 10px)" },
-            { left: "0px", top: "0px" }
-        ], {
-            duration: 2800,
-            iterations: Infinity,
-            easing: "linear"
-        });
+    if (!isActive) {
+      item.classList.add("active");
+      question.setAttribute("aria-expanded", "true");
+      question.querySelector("span[aria-hidden]").textContent = "−";
+    }
+
+  });
+
+});
+
+/* ACORDEÃO — FAQ (cada item abre/fecha de forma independente) */
+document.querySelectorAll(".faq-question").forEach(button => {
+
+  button.addEventListener("click", () => {
+
+    const item = button.parentElement;
+    const isActive = item.classList.toggle("active");
+
+    button.setAttribute("aria-expanded", isActive ? "true" : "false");
+
+  });
+
+});
+
+/* REVEAL AO ROLAR A PÁGINA (anima uma vez, sem repetir a cada scroll) */
+const reveals = document.querySelectorAll(".reveal");
+
+if (reveals.length && "IntersectionObserver" in window) {
+
+  const observer = new IntersectionObserver((entries) => {
+
+    entries.forEach(entry => {
+
+      if (entry.isIntersecting) {
+        entry.target.classList.add("active");
+        observer.unobserve(entry.target);
+      }
 
     });
 
-    box.addEventListener("mouseleave", () => {
+  }, {
+    threshold: 0.15
+  });
 
-        if (animation) {
-            animation.cancel();
-        }
-
-        glow.style.opacity = "0";
-
-    });
+  reveals.forEach(element => observer.observe(element));
 
 }

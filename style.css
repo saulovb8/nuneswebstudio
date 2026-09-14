@@ -198,13 +198,34 @@ header span {
 
 /* IMAGEM */
 .hero-img {
-  transform: translateY(-100px);
+  transform: translateY(-20px);
+  flex-shrink: 0;
 }
 
 .hero-img img {
-  width: 260px;
+  display: block;
+  width: 200px;
+  height: auto;
+  max-height: 260px;
   border-radius: 50%;
   border: 3px solid var(--primary);
+}
+
+@media (max-width: 900px) {
+  .hero {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .hero-img {
+    transform: none;
+    margin-top: 30px;
+  }
+
+  .hero-img img {
+    width: 150px;
+    max-height: 200px;
+  }
 }
 
 /* SEÇÕES */
@@ -395,35 +416,6 @@ footer {
     margin-left: 70px;
 }
 
-.stats{
-    display: flex;
-    align-items: center;
-    gap: 35px;
-    margin-top: 80px;
-    padding-top: 40px;
-    border-top: 1px solid #1b1b1b;
-    width: fit-content;
-}
-
-.stat-item h2{
-    color: #d4af37;
-    font-size: 65px;
-    font-family: Georgia, serif;
-    font-weight: 500;
-}
-
-.stat-item span{
-    color: #6e6e6e;
-    letter-spacing: 4px;
-    font-size: 15px;
-}
-
-.line{
-    width: 1px;
-    height: 80px;
-    background: #1d1d1d;
-}
-
 /* =========================
    SOBRE MIM
 ========================= */
@@ -486,11 +478,12 @@ footer {
   position: absolute;
   bottom: 25px;
   left: -10px;
+  max-width: 210px;
 
   background: #111;
   border: 1px solid rgba(255,255,255,0.08);
 
-  padding: 25px 30px;
+  padding: 22px 28px;
   border-radius: 20px;
 
   backdrop-filter: blur(10px);
@@ -498,8 +491,8 @@ footer {
 
 .experience-box h3{
   color: #d4af37;
-  font-size: 50px;
-  line-height: 1;
+  font-size: 22px;
+  line-height: 1.25;
 }
 
 .experience-box p{
@@ -845,7 +838,7 @@ footer {
   font-size: 30px;
 }
 
-.service-top h3{
+.service-top .service-num{
   font-size: 90px;
   color: rgba(212,175,55,0.07);
   font-weight: 800;
@@ -853,7 +846,7 @@ footer {
 
 /* TITULO */
 
-.service-card h4{
+.service-card h3{
   font-size: 45px;
   color: #fff;
   line-height: 1.1;
@@ -1027,40 +1020,12 @@ footer {
   line-height: 1.6;
 }
 
-/* Grade de estatísticas (inferior) */
-.process-stats {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  border: 1px solid #222;
-  margin-top: 60px;
-  border-radius: 12px;
-  overflow: hidden;
-}
-
-.stat-item {
-  padding: 40px;
-  text-align: center;
-  border: 0.5px solid #222;
-}
-
-.stat-item h4 {
-  font-size: 2.5rem;
-  color: #c5a059;
-  font-weight: 900;
-}
-
-.stat-item p {
-  font-size: 0.8rem;
-  color: #666;
-  letter-spacing: 2px;
-  margin-top: 5px;
-}
-
-/* Responsividade */
-@media (max-width: 768px) {
-  .process-stats {
-    grid-template-columns: 1fr;
-  }
+.process-title p {
+  color: #777;
+  margin-top: 20px;
+  max-width: 600px;
+  font-size: 16px;
+  line-height: 1.7;
 }
 
 /* --- CASES SECTION --- */
@@ -1087,7 +1052,7 @@ footer {
 
 .cases-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
   gap: 30px;
   margin-top: 50px;
 }
@@ -1106,84 +1071,27 @@ footer {
   transform: translateY(-5px);
 }
 
-.quote-icon {
-  font-family: serif;
-  font-size: 4rem;
-  color: #222;
-  position: absolute;
-  top: 10px;
-  left: 30px;
-  line-height: 1;
-}
-
-.stars {
-  color: #c5a059;
-  font-size: 0.9rem;
-  margin-bottom: 20px;
-}
-
-.case-text {
-  color: #888;
-  font-style: italic;
-  line-height: 1.6;
-  margin-bottom: 30px;
-  position: relative;
-  z-index: 2;
-}
-
-/* O Badge de resultado (dourado) */
-.case-result {
-  background: linear-gradient(90deg, rgba(197, 160, 89, 0.1), rgba(197, 160, 89, 0.05));
-  border: 1px solid rgba(197, 160, 89, 0.3);
-  padding: 10px 20px;
-  border-radius: 50px;
-  display: inline-block;
-  margin-bottom: 30px;
-}
-
-.case-result span {
-  color: #c5a059;
-  font-size: 0.75rem;
-  font-weight: bold;
-  letter-spacing: 1px;
-}
-
-/* Autor do Depoimento */
-.case-author {
-  display: flex;
-  align-items: center;
-  gap: 15px;
-  border-top: 1px solid #222;
-  padding-top: 25px;
-}
-
-.author-avatar {
-  width: 45px;
-  height: 45px;
-  border-radius: 10px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: white;
-  font-weight: bold;
+.case-card h3 {
   font-size: 1.2rem;
+  color: #fff;
+  margin-top: 20px;
 }
 
-.author-info h4 {
-  font-size: 1rem;
-  margin-bottom: 2px;
+.case-card p {
+  color: #8d8d8d;
+  line-height: 1.7;
+  margin-top: 12px;
+  font-size: 0.95rem;
 }
 
-.author-info p {
-  font-size: 0.75rem;
-  color: #555;
+.cases-areas {
+  margin-top: 60px;
 }
 
-/* Ajuste Responsivo */
-.cases-grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 30px;
+.cases-areas h3 {
+  font-size: 1.3rem;
+  color: #fff;
+  margin-bottom: 20px;
 }
 
 /* PRICING */
@@ -1505,8 +1413,8 @@ footer {
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #d4af37;
-  font-size: 24px;
+  color: var(--primary);
+  font-size: 28px;
   transition: 0.3s;
 }
 
@@ -1546,36 +1454,6 @@ footer {
     font-size: 16px;
   }
 
-}
-.faq-answer {
-  max-height: 0;
-  overflow: hidden;
-  transition: max-height 0.4s ease;
-}
-
-.faq-item.active .faq-answer {
-  max-height: 200px;
-}
-
-.faq-question {
-  width: 100%;
-  background: transparent;
-  border: none;
-  color: #fff;
-  cursor: pointer;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.faq-question span {
-  font-size: 28px;
-  color: var(--primary);
-  transition: 0.3s;
-}
-
-.faq-item.active .faq-question span {
-  transform: rotate(45deg);
 }
 .plan-name{
   display: block;
@@ -1790,6 +1668,13 @@ MESMO ESTILO DO PRICING
 /* TOPO */
 
 .guide-question{
+  width: 100%;
+  background: transparent;
+  border: none;
+  outline: none;
+  text-align: left;
+  font-family: inherit;
+
   padding: 32px 35px;
 
   display: flex;
@@ -1805,7 +1690,7 @@ MESMO ESTILO DO PRICING
   font-weight: 700;
 }
 
-.guide-question span{
+.guide-question > span{
   color: #d4af37;
   font-size: 36px;
   font-weight: 300;
@@ -1885,7 +1770,7 @@ MESMO ESTILO DO PRICING
     line-height: 1.5;
   }
 
-  .guide-question span{
+  .guide-question > span{
     font-size: 28px;
   }
 
@@ -2283,24 +2168,6 @@ MESMO ESTILO DO PRICING
 .reveal {
   opacity: 0;
   transform: translateY(40px);
-  transition: all 0.8s ease;
-}
-
-.reveal.active {
-  opacity: 1;
-  transform: translateY(0);
-}
-html {
-  scroll-behavior: smooth;
-}
-html {
-  scroll-behavior: smooth;
-}
-/* ANIMAÇÃO DAS SEÇÕES */
-
-.reveal {
-  opacity: 0;
-  transform: translateY(50px);
   transition: opacity 0.8s ease, transform 0.8s ease;
 }
 
@@ -2308,18 +2175,11 @@ html {
   opacity: 1;
   transform: translateY(0);
 }
-.reveal {
-  opacity: 0;
-  transform: translateY(40px);
-  transition:
-    opacity 0.8s ease,
-    transform 0.8s ease;
+
+html {
+  scroll-behavior: smooth;
 }
 
-.reveal.active {
-  opacity: 1;
-  transform: translateY(0);
-}
 .reveal .service-card,
 .reveal .case-card,
 .reveal .price-card {
@@ -2358,41 +2218,6 @@ html {
 .case-card:nth-child(4),
 .price-card:nth-child(4) {
   transition-delay: 0.4s;
-}
-.stat-item h2 {
-    position: relative;
-    display: inline-block;
-
-    color: #d4af37;
-
-    background: linear-gradient(
-        120deg,
-        #8f6b16 0%,
-        #d4af37 35%,
-        #fff6c7 48%,
-        #ffffff 50%,
-        #fff6c7 52%,
-        #d4af37 65%,
-        #8f6b16 100%
-    );
-
-    background-size: 250% 100%;
-
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-
-    animation: metalShine 2.8s linear infinite;
-}
-
-@keyframes metalShine {
-    0% {
-        background-position: 150% center;
-    }
-
-    100% {
-        background-position: -150% center;
-    }
 }
 .footer-brand {
   text-align: center;
@@ -2907,30 +2732,6 @@ html {
     background-position: -150% center;
   }
 
-}
-
-
-/* ========================================
-   ANIMAÇÃO REVEAL
-======================================== */
-
-.reveal {
-
-  opacity: 0;
-
-  transform: translateY(40px);
-
-  transition:
-    opacity 0.8s ease,
-    transform 0.8s ease;
-}
-
-
-.reveal.active {
-
-  opacity: 1;
-
-  transform: translateY(0);
 }
 
 
