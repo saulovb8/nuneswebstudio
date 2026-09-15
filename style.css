@@ -3041,3 +3041,174 @@ html {
   }
 
 }
+
+/* =========================================================
+   BLOCO 3 — PROFUNDIDADE, CONTINUIDADE E MOVIMENTO PREMIUM
+   (100% aditivo). Nada acima foi removido ou alterado.
+
+   FORA DE ESCOPO NESTE BLOCO (mantidos exatamente como estão):
+   - Hero (.hero e filhos)
+   - Cards de Serviços (.service-card)
+   - Seção de Preços/Planos (.pricing, .price-card e variações
+     .basic/.premium/.business) — já possui tratamento premium
+     próprio, não foi tocada.
+========================================================= */
+
+/* ---------------------------------------------------------
+   1. CAMADAS ENTRE SEÇÕES
+   Mesma cor-base de cada seção (nenhum hexadecimal foi
+   alterado) + um sheen extremamente sutil no topo + uma
+   linha de transição (inset) quase imperceptível, para dar
+   sensação de superfícies/camadas distintas ao rolar a página.
+--------------------------------------------------------- */
+
+.about {
+  background:
+    radial-gradient(120% 140% at 50% -10%, rgba(255, 255, 255, 0.02), rgba(255, 255, 255, 0) 55%),
+    #0b0b0b;
+  box-shadow: inset 0 1px 0 rgba(212, 175, 55, 0.04);
+}
+
+.services {
+  background:
+    radial-gradient(120% 140% at 50% -10%, rgba(212, 175, 55, 0.025), rgba(212, 175, 55, 0) 55%),
+    #0b0b0b;
+  box-shadow: inset 0 1px 0 rgba(212, 175, 55, 0.05);
+}
+
+.process {
+  background:
+    radial-gradient(120% 140% at 50% -10%, rgba(255, 255, 255, 0.02), rgba(255, 255, 255, 0) 55%),
+    #050505;
+  box-shadow: inset 0 1px 0 rgba(212, 175, 55, 0.04);
+}
+
+.cases {
+  background:
+    radial-gradient(120% 140% at 50% -10%, rgba(212, 175, 55, 0.02), rgba(212, 175, 55, 0) 55%),
+    #0a0a0a;
+  box-shadow: inset 0 1px 0 rgba(212, 175, 55, 0.05);
+}
+
+.services-guide {
+  background:
+    radial-gradient(120% 140% at 50% -10%, rgba(255, 255, 255, 0.02), rgba(255, 255, 255, 0) 55%),
+    #070707;
+  box-shadow: inset 0 1px 0 rgba(212, 175, 55, 0.04);
+}
+
+.faq-section {
+  background:
+    radial-gradient(120% 140% at 50% -10%, rgba(212, 175, 55, 0.02), rgba(212, 175, 55, 0) 55%),
+    #0b0b0b;
+  box-shadow: inset 0 1px 0 rgba(212, 175, 55, 0.05);
+}
+
+.footer {
+  background:
+    radial-gradient(120% 100% at 50% -10%, rgba(212, 175, 55, 0.02), rgba(212, 175, 55, 0) 60%),
+    #0f0f0f;
+}
+
+/* ---------------------------------------------------------
+   2. REVEAL MAIS FLUIDO (curva + leve escala)
+   Aplica uma curva de entrada mais suave e uma variação de
+   escala quase imperceptível (0.985 → 1) aos blocos que usam
+   o .reveal genérico. Hero, Preços e os cards já tratados em
+   blocos anteriores (service-card / case-card / price-card)
+   são explicitamente excluídos e continuam 100% inalterados.
+--------------------------------------------------------- */
+
+.reveal:not(.hero):not(.pricing):not(.service-card):not(.case-card):not(.price-card) {
+  transition:
+    opacity 0.9s cubic-bezier(.16, .84, .44, 1),
+    transform 0.9s cubic-bezier(.16, .84, .44, 1);
+  transform: translateY(40px) scale(0.985);
+}
+
+.reveal.active:not(.hero):not(.pricing):not(.service-card):not(.case-card):not(.price-card) {
+  transform: translateY(0) scale(1);
+}
+
+/* ---------------------------------------------------------
+   3. PEQUENA DEFASAGEM DE ENTRADA NOS ITENS INTERNOS
+   Mesmo padrão já usado em Serviços/Diferenciais/Preços,
+   agora estendido (só em CSS, sem novas classes) para os
+   passos do Processo, os itens do Guia e as perguntas do FAQ.
+--------------------------------------------------------- */
+
+.reveal .process-step,
+.reveal .guide-item,
+.reveal .faq-item {
+  opacity: 0;
+  transform: translateY(24px);
+  transition:
+    opacity 0.6s cubic-bezier(.16, .84, .44, 1),
+    transform 0.6s cubic-bezier(.16, .84, .44, 1);
+}
+
+.reveal.active .process-step,
+.reveal.active .guide-item,
+.reveal.active .faq-item {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.process-step:nth-child(1) { transition-delay: 0.05s; }
+.process-step:nth-child(2) { transition-delay: 0.12s; }
+.process-step:nth-child(3) { transition-delay: 0.19s; }
+.process-step:nth-child(4) { transition-delay: 0.26s; }
+
+.guide-item:nth-child(1) { transition-delay: 0.04s; }
+.guide-item:nth-child(2) { transition-delay: 0.09s; }
+.guide-item:nth-child(3) { transition-delay: 0.14s; }
+.guide-item:nth-child(4) { transition-delay: 0.19s; }
+.guide-item:nth-child(5) { transition-delay: 0.24s; }
+.guide-item:nth-child(6) { transition-delay: 0.29s; }
+.guide-item:nth-child(7) { transition-delay: 0.34s; }
+.guide-item:nth-child(8) { transition-delay: 0.39s; }
+
+.faq-item:nth-child(1) { transition-delay: 0.04s; }
+.faq-item:nth-child(2) { transition-delay: 0.09s; }
+.faq-item:nth-child(3) { transition-delay: 0.14s; }
+.faq-item:nth-child(4) { transition-delay: 0.19s; }
+.faq-item:nth-child(5) { transition-delay: 0.24s; }
+.faq-item:nth-child(6) { transition-delay: 0.29s; }
+
+/* Compensação de especificidade: o hover já existente do
+   guide-item (translateY(-8px)) precisa continuar vencendo a
+   regra compartilhada ".reveal.active .guide-item" agora que
+   a seção passou a usar .reveal — nada no hover foi alterado,
+   apenas reforçado para não ser silenciosamente sobrescrito. */
+.services-guide .guide-container .guide-item:hover {
+  transform: translateY(-8px);
+}
+
+/* ---------------------------------------------------------
+   4. ACESSIBILIDADE — prefers-reduced-motion
+   Remove só as animações adicionadas neste bloco. O Hero e os
+   demais efeitos já aprovados não são referenciados aqui e
+   continuam se comportando exatamente como antes.
+--------------------------------------------------------- */
+
+@media (prefers-reduced-motion: reduce) {
+  .reveal:not(.hero):not(.pricing):not(.service-card):not(.case-card):not(.price-card),
+  .reveal .process-step,
+  .reveal .guide-item,
+  .reveal .faq-item {
+    transition: none;
+  }
+}
+
+/* ---------------------------------------------------------
+   5. INTERAÇÃO SUTIL COM O MOUSE (perspectiva)
+   Habilita profundidade 3D para o leve tilt dos cards de
+   "Como trabalho", aplicado via JS em js/script.js. Sem este
+   perspective no elemento pai, a rotação aplicada pelo script
+   pareceria achatada. Não altera colunas, gap ou breakpoints
+   já existentes do grid.
+--------------------------------------------------------- */
+
+.cases-grid {
+  perspective: 1000px;
+}
