@@ -1031,6 +1031,127 @@ footer {
 
 }
 
+/* =========================================================
+   BLOCO 2B — CARDS DE SERVIÇOS PREMIUM (100% aditivo)
+   Nada acima foi removido ou alterado. Estas regras só
+   aprimoram profundidade, borda, sombra, ícone, número e
+   microinterações dos 4 service-card existentes.
+========================================================= */
+
+/* 1. Fundo grafite sofisticado com leve gradiente de profundidade */
+.service-card {
+  background:
+    radial-gradient(120% 100% at 18% -12%, rgba(212, 175, 55, 0.05), rgba(212, 175, 55, 0) 55%),
+    linear-gradient(145deg, rgba(255, 255, 255, 0.035), rgba(255, 255, 255, 0.01)),
+    linear-gradient(160deg, #121212 0%, #070707 100%);
+
+  border-color: rgba(212, 175, 55, 0.14);
+
+  box-shadow:
+    0 25px 50px -22px rgba(0, 0, 0, 0.7),
+    inset 0 1px 0 rgba(255, 255, 255, 0.03);
+
+  transition:
+    box-shadow 0.4s ease,
+    border-color 0.4s ease,
+    background 0.4s ease;
+}
+
+/* 2. Linha dourada sutil no topo do card (detalhe premium) */
+.service-card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 28px;
+  right: 28px;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(212, 175, 55, 0.35), transparent);
+  opacity: 0.35;
+  transition: opacity 0.4s ease;
+}
+
+/* 3. Sheen dourado contido no canto do card (preso pelo overflow:hidden já existente) */
+.service-card::after {
+  content: "";
+  position: absolute;
+  top: -60px;
+  right: -60px;
+  width: 160px;
+  height: 160px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(212, 175, 55, 0.10), rgba(212, 175, 55, 0) 70%);
+  opacity: 0;
+  transition: opacity 0.45s ease;
+  pointer-events: none;
+}
+
+/* 4. Hover: elevação suave, borda mais evidente, sombra profunda e glow contido (inset).
+   Seletor reforçado para vencer a especificidade de ".reveal.active .service-card"
+   (regra compartilhada com case-card/price-card) sem tocar nela. */
+.services .services-grid .service-card:hover {
+  transform: translateY(-10px);
+  border-color: rgba(212, 175, 55, 0.4);
+  box-shadow:
+    0 35px 65px -22px rgba(0, 0, 0, 0.8),
+    inset 0 0 40px rgba(212, 175, 55, 0.05),
+    inset 0 1px 0 rgba(255, 255, 255, 0.05);
+}
+
+.service-card:hover::before {
+  opacity: 0.9;
+}
+
+.service-card:hover::after {
+  opacity: 1;
+}
+
+/* 5. Ícone: acabamento mais refinado + microinteração no hover */
+.service-icon {
+  background: linear-gradient(160deg, rgba(212, 175, 55, 0.10), rgba(212, 175, 55, 0.03));
+  box-shadow: inset 0 0 0 1px rgba(212, 175, 55, 0.06);
+  transition:
+    transform 0.35s cubic-bezier(.22, .9, .32, 1),
+    box-shadow 0.35s ease,
+    filter 0.35s ease;
+}
+
+.service-card:hover .service-icon {
+  transform: translateY(-3px) scale(1.07);
+  box-shadow:
+    inset 0 0 0 1px rgba(212, 175, 55, 0.14),
+    0 0 22px rgba(212, 175, 55, 0.18);
+  filter: drop-shadow(0 0 6px rgba(212, 175, 55, 0.25));
+}
+
+/* 6. Número: presença mais sofisticada + leve reação no hover */
+.service-top .service-num {
+  transition: color 0.4s ease, transform 0.4s ease;
+}
+
+.service-card:hover .service-top .service-num {
+  color: rgba(212, 175, 55, 0.16);
+  transform: translateY(-4px);
+}
+
+/* 7. Acessibilidade: sem microanimações para quem prefere menos movimento */
+@media (prefers-reduced-motion: reduce) {
+  .service-card,
+  .service-icon,
+  .service-top .service-num,
+  .service-card::before,
+  .service-card::after {
+    transition: none;
+  }
+
+  .services .services-grid .service-card:hover {
+    transform: none;
+  }
+
+  .service-card:hover .service-icon {
+    transform: none;
+  }
+}
+
 /* --- PROCESSO SECTION --- */
 .process {
   padding: 80px 10%;
