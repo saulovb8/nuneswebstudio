@@ -5,6 +5,38 @@
   --primary-dark: #b8962e;
   --text: #ffffff;
   --text-sec: #aaaaaa;
+
+  /* PALETA DOURADO METÁLICO — usada pelo sistema de detalhes
+     animados (hero, nav, linhas/pontos decorativos). Sempre
+     dourado metálico + preto: sem amarelo neon, sem glow forte. */
+  --gold: #d4af37;
+  --gold-light: #e9cf7a;
+  --gold-lighter: #fff6de;
+  --gold-dark: #8a6b1e;
+  --gold-deep: #4a3810;
+  --black-deep: #050505;
+
+  /* BLOCO 7 — VISUAL ENGINE: tokens do novo sistema */
+  --bg-black: #060606;
+  --bg-graphite: #161616;
+  --bg-graphite-2: #101010;
+  --mono: 'JetBrains Mono', 'Courier New', monospace;
+
+  --tech-grid:
+    repeating-linear-gradient(
+      90deg,
+      rgba(255, 255, 255, 0.05) 0,
+      rgba(255, 255, 255, 0.05) 1px,
+      transparent 1px,
+      transparent 120px
+    ),
+    repeating-linear-gradient(
+      0deg,
+      rgba(255, 255, 255, 0.035) 0,
+      rgba(255, 255, 255, 0.035) 1px,
+      transparent 1px,
+      transparent 120px
+    );
 }
 
 * {
@@ -14,10 +46,31 @@
   font-family: 'Poppins', sans-serif;
 }
 
+html {
+  scroll-behavior: smooth;
+}
+
 body {
   background: radial-gradient(circle at top, #111111, #000000);
   color: var(--text);
   overflow-x: hidden;
+}
+
+/* Compensa a altura do header fixo/sticky ao rolar até uma seção
+   pela navegação, para a transição parecer contínua, sem saltos. */
+#home,
+#about,
+#services,
+#pricing,
+#diferenciais,
+#faq {
+  scroll-margin-top: 90px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
 }
 
 /* EFEITO DOURADO */
@@ -383,12 +436,31 @@ footer {
 }
 
 .header{
+    position: sticky;
+    top: 0;
+    z-index: 100;
+
     width: 100%;
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 25px 60px;
+    padding: 22px 60px;
+
     background: transparent;
+    border-bottom: 1px solid transparent;
+    backdrop-filter: blur(0px);
+    -webkit-backdrop-filter: blur(0px);
+    transition: background 0.4s ease, border-color 0.4s ease, backdrop-filter 0.4s ease, padding 0.3s ease;
+}
+
+/* Estado "premium" ao rolar: vidro escuro sutil, sem
+   sombra pesada nem mudança brusca de altura. */
+.header.is-scrolled{
+    padding: 14px 60px;
+    background: rgba(5, 5, 5, 0.72);
+    border-bottom: 1px solid rgba(212, 175, 55, 0.14);
+    backdrop-filter: blur(16px) saturate(140%);
+    -webkit-backdrop-filter: blur(16px) saturate(140%);
 }
 
 .logo{
@@ -407,6 +479,7 @@ footer {
 
 .nav{
     display: flex;
+    align-items: center;
     gap: 45px;
 
     /* faz o menu ocupar espaço */
@@ -414,15 +487,61 @@ footer {
 }
 
 .nav a{
+    position: relative;
+    display: inline-block;
+    padding: 6px 1px;
+
     color: #8a8a8a;
     text-decoration: none;
     font-size: 14px;
     letter-spacing: 3px;
-    transition: 0.3s;
+
+    transition: color 0.3s ease, transform 0.25s ease;
 }
 
 .nav a:hover{
     color: white;
+    transform: translateY(-1px);
+}
+
+.nav a:active{
+    transform: translateY(0);
+}
+
+/* Indicador dourado discreto do item ativo (definido via JS,
+   scroll-spy em js/script.js) — linha fina e animada, sem
+   deslocar o texto nem pular de tamanho. */
+.nav a::after{
+    content: "";
+    position: absolute;
+    left: 0;
+    bottom: -4px;
+    width: 100%;
+    height: 1px;
+
+    background: linear-gradient(90deg, var(--gold-dark), var(--gold-light), var(--gold-dark));
+    background-size: 200% 100%;
+
+    transform: scaleX(0);
+    transform-origin: left center;
+    opacity: 0;
+
+    transition: transform 0.35s cubic-bezier(.16,.84,.44,1), opacity 0.35s ease;
+}
+
+.nav a.active{
+    color: var(--gold-light);
+}
+
+.nav a.active::after{
+    transform: scaleX(1);
+    opacity: 1;
+    animation: navIndicatorShift 6s linear infinite;
+}
+
+@keyframes navIndicatorShift{
+    0%   { background-position: 0% 50%; }
+    100% { background-position: 200% 50%; }
 }
 
 .btn-header{
@@ -502,7 +621,7 @@ footer {
 
 }
 
-.hero h1 span{
+.hero h1 span:not(.split-line):not(.split-line-inner){
     color: #d4af37;
     font-style: italic;
 }
@@ -527,7 +646,7 @@ footer {
   background: #0b0b0b;
 }
 
-.about-title span{
+.about-title > span{
   color: #d4af37;
   letter-spacing: 3px;
   font-size: 13px;
@@ -542,7 +661,7 @@ footer {
   font-weight: 800;
 }
 
-.about-title h2 span{
+.about-title h2 span:not(.split-line):not(.split-line-inner){
   color: #d4af37;
 }
 
@@ -862,7 +981,7 @@ footer {
   background: #0b0b0b;
 }
 
-.services-title span{
+.services-title > span{
   color: #d4af37;
   letter-spacing: 3px;
   font-size: 13px;
@@ -877,7 +996,7 @@ footer {
   font-weight: 800;
 }
 
-.services-title h2 span{
+.services-title h2 span:not(.split-line):not(.split-line-inner){
   color: #d4af37;
 }
 
@@ -1162,19 +1281,40 @@ footer {
   margin-bottom: 60px;
 }
 
-.process-title span {
+.process-title > span {
   color: #c5a059; /* Dourado que você está usando */
   font-weight: bold;
   letter-spacing: 2px;
 }
 
+/* Mesmo font-size/weight/line-height de .about-title h2 e
+   .services-title h2 — sem isso, o efeito de entrada por linha
+   (split-line, ver BLOCO 9 em js/cinematic.js) já roda igual nas
+   três seções, mas o deslize de 115% ficava pouco perceptível
+   num título pequeno. Só tipografia: cor do texto normal, cores,
+   layout e o destaque em <span> continuam como estavam. */
 .process-title h2 {
-  font-size: 2.5rem;
-  margin-top: 10px;
+  font-size: 95px;
+  line-height: 0.95;
+  color: #fff;
+  margin-top: 20px;
+  font-weight: 800;
 }
 
-.process-title h2 span {
+.process-title h2 span:not(.split-line):not(.split-line-inner) {
   color: #c5a059;
+}
+
+@media (max-width: 1100px) {
+  .process-title h2 {
+    font-size: 65px;
+  }
+}
+
+@media (max-width: 700px) {
+  .process-title h2 {
+    font-size: 48px;
+  }
 }
 
 /* Timeline */
@@ -1257,7 +1397,7 @@ footer {
   background-color: #0a0a0a;
 }
 
-.cases-title span {
+.cases-title > span {
   color: #c5a059;
   font-weight: bold;
   letter-spacing: 2px;
@@ -1268,7 +1408,7 @@ footer {
   margin-top: 10px;
 }
 
-.cases-title h2 span {
+.cases-title h2 span:not(.split-line):not(.split-line-inner) {
   color: #c5a059;
   font-style: italic; /* Opcional, para dar o destaque da imagem */
 }
@@ -1324,7 +1464,7 @@ footer {
   background: #070707;
 }
 
-.pricing-title span{
+.pricing-title > span{
   color: #d4af37;
   letter-spacing: 3px;
   font-size: 14px;
@@ -1339,7 +1479,7 @@ footer {
   font-weight: 800;
 }
 
-.pricing-title h2 span{
+.pricing-title h2 span:not(.split-line):not(.split-line-inner){
   color: #d4af37;
   font-style: italic;
 }
@@ -1572,7 +1712,7 @@ footer {
   background: #0b0b0b;
 }
 
-.faq-title span{
+.faq-title > span{
   color: #d4af37;
   font-size: 14px;
   letter-spacing: 2px;
@@ -1586,7 +1726,7 @@ footer {
   font-weight: 800;
 }
 
-.faq-title h2 span{
+.faq-title h2 span:not(.split-line):not(.split-line-inner){
   color: #d4af37;
 }
 
@@ -1794,7 +1934,7 @@ MESMO ESTILO DO PRICING
 
 /* TÍTULO */
 
-.guide-title span{
+.guide-title > span{
   color: #d4af37;
   letter-spacing: 3px;
   font-size: 14px;
@@ -1809,7 +1949,7 @@ MESMO ESTILO DO PRICING
   font-weight: 800;
 }
 
-.guide-title h2 span{
+.guide-title h2 span:not(.split-line):not(.split-line-inner){
   color: #d4af37;
   font-style: italic;
 }
@@ -3211,4 +3351,2216 @@ html {
 
 .cases-grid {
   perspective: 1000px;
+}
+
+/* =========================================================
+   BLOCO 4 — INTERAÇÕES AVANÇADAS (100% aditivo)
+   Nada acima foi removido ou alterado.
+
+   FORA DE ESCOPO NESTE BLOCO (mantidos exatamente como estão):
+   - Hero (.hero, .btn, .btn-secondary e filhos)
+   - Redesenho do .service-card (já aprovado)
+   - Seção de Preços/Planos (.pricing, .price-card, .price-btn)
+========================================================= */
+
+/* ---------------------------------------------------------
+   1. BOTÕES
+   .btn-header já tinha lift + glow + shine no hover; faltava
+   só o retorno tátil ao clicar. Nenhum valor já aprovado foi
+   alterado, apenas um novo estado (:active) foi adicionado.
+--------------------------------------------------------- */
+.btn-header:active {
+  transform: translateY(-1px) scale(0.97);
+}
+
+/* ---------------------------------------------------------
+   2. ÍCONES
+   Pequena reação ao hover em ícones que ainda não tinham
+   microinteração própria.
+--------------------------------------------------------- */
+
+/* Ícone do case-card (mesma classe .service-icon dos cards de
+   Serviços, mas o hover abaixo é escopado só ao .case-card —
+   não altera em nada o .service-card já aprovado) */
+.case-card:hover .service-icon {
+  transform: scale(1.08);
+  filter: drop-shadow(0 0 6px rgba(197, 160, 89, 0.3));
+}
+
+/* Número do passo do Processo */
+.step-number {
+  transition: transform 0.3s cubic-bezier(.16, .84, .44, 1), box-shadow 0.3s ease;
+}
+
+.process-step:hover .step-number {
+  transform: scale(1.1);
+  box-shadow: 0 0 14px rgba(197, 160, 89, 0.28);
+}
+
+/* Ícones "+/−" do FAQ e do Guia de Serviços, com um leve
+   realce no restante do botão para reforçar a área clicável */
+.faq-question,
+.guide-question {
+  transition: background 0.3s ease;
+}
+
+.faq-question:hover,
+.guide-question:hover {
+  background: rgba(212, 175, 55, 0.035);
+}
+
+.faq-question:hover span[aria-hidden],
+.guide-question:hover > span {
+  transform: scale(1.08);
+}
+
+/* ---------------------------------------------------------
+   3. TILT NOS CARDS DE SERVIÇOS (já aprovados)
+   Interação opcional de profundidade seguindo o mouse,
+   implementada via JS em js/script.js. O deslocamento de
+   hover já aprovado (translateY(-10px)) fica embutido na
+   transformação para não se perder durante o tilt; os
+   pseudo-elementos de brilho (::before/::after) continuam
+   reagindo ao :hover real do CSS, sem qualquer alteração.
+   Este "perspective" é a única regra de CSS necessária — o
+   resto é feito pelo script com as mesmas guardas de
+   dispositivo/reduced-motion já usadas nos case-card.
+--------------------------------------------------------- */
+.services-grid {
+  perspective: 1000px;
+}
+
+/* ---------------------------------------------------------
+   4. LINKS
+   Sublinhado animado via background (não usa ::after, então
+   não afeta layout nem largura) na navegação e nos links do
+   rodapé. As transições de cor já existentes continuam.
+--------------------------------------------------------- */
+.footer-links a,
+.footer-contact a {
+  background-image: linear-gradient(90deg, #d4af37, #d4af37);
+  background-repeat: no-repeat;
+  background-position: 0 100%;
+  background-size: 0% 1px;
+  transition: background-size 0.35s cubic-bezier(.16, .84, .44, 1), color 0.3s ease;
+}
+
+.footer-links a:hover,
+.footer-contact a:hover {
+  background-size: 100% 1px;
+}
+
+/* Sublinhado dourado do hover na navegação principal — reaproveita
+   o mesmo ::after do indicador ativo, só com opacidade mais baixa
+   para não se confundir com o item realmente ativo. */
+.nav a:not(.active):hover::after {
+  transform: scaleX(1);
+  opacity: 0.45;
+}
+
+/* ---------------------------------------------------------
+   5. ACESSIBILIDADE — foco visível por teclado
+   Não existia nenhuma regra de :focus em todo o site. Offset
+   negativo (inset) para nunca ser cortado por containers com
+   overflow:hidden (ex.: .faq-container, .guide-item).
+--------------------------------------------------------- */
+a:focus-visible,
+button:focus-visible {
+  outline: 2px solid rgba(212, 175, 55, 0.6);
+  outline-offset: -3px;
+}
+
+/* ---------------------------------------------------------
+   6. prefers-reduced-motion
+   Remove apenas as novas microrotações/escala deste bloco.
+   O ícone do service-card já é neutralizado pelo BLOCO 2B; o
+   tilt do service-card e do case-card já é desativado no JS.
+   Transições de cor/sublinhado (não são "movimento") seguem
+   normalmente, como é prática comum de acessibilidade.
+--------------------------------------------------------- */
+@media (prefers-reduced-motion: reduce) {
+  .btn-header:active,
+  .process-step:hover .step-number,
+  .faq-question:hover span[aria-hidden],
+  .guide-question:hover > span {
+    transform: none;
+  }
+
+  .nav a:hover {
+    transform: none;
+  }
+
+  .nav a.active::after {
+    animation: none;
+  }
+}
+
+/* =========================================================
+   BLOCO 5 — SISTEMA VISUAL TECNOLÓGICO (100% aditivo)
+   Nada acima foi removido ou alterado.
+
+   FORA DE ESCOPO NESTE BLOCO (mantidos exatamente como estão):
+   - Texto, foto, CTAs e estrutura do Hero
+   - Redesenho do .service-card / .case-card
+   - Seção de Preços/Planos (.pricing, .price-card, .price-btn)
+========================================================= */
+
+/* ---------------------------------------------------------
+   1. HERO — ATMOSFERA TECNOLÓGICA
+   Elementos puramente decorativos (aria-hidden, pointer-
+   events:none) adicionados como uma camada extra dentro do
+   Hero, atrás do texto e da foto. .hero-text/.hero-img não
+   foram tocados: só ganharam um "z-index" natural por serem
+   conteúdo estático, pintado depois do z-index:-1 abaixo.
+--------------------------------------------------------- */
+
+.hero {
+  position: relative;
+  z-index: 0; /* cria um contexto de empilhamento só para o Hero */
+}
+
+.hero-atmosphere {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.atmo-aurora {
+  position: absolute;
+  display: block;
+  border-radius: 50%;
+  filter: blur(80px);
+  will-change: transform;
+}
+
+.atmo-aurora-1 {
+  width: 560px;
+  height: 560px;
+  top: -200px;
+  left: -180px;
+  background: radial-gradient(circle, rgba(212, 175, 55, 0.09), rgba(212, 175, 55, 0) 70%);
+  animation: atmoDrift1 56s ease-in-out infinite alternate;
+}
+
+.atmo-aurora-2 {
+  width: 460px;
+  height: 460px;
+  bottom: -180px;
+  left: -120px;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.045), rgba(255, 255, 255, 0) 70%);
+  animation: atmoDrift2 68s ease-in-out infinite alternate;
+}
+
+@keyframes atmoDrift1 {
+  from { transform: translate(0, 0) scale(1); }
+  to   { transform: translate(26px, 18px) scale(1.06); }
+}
+
+@keyframes atmoDrift2 {
+  from { transform: translate(0, 0) scale(1); }
+  to   { transform: translate(-18px, -22px) scale(1.05); }
+}
+
+.atmo-line {
+  position: absolute;
+  display: block;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(212, 175, 55, 0.24), transparent);
+  will-change: transform, opacity;
+}
+
+.atmo-line-1 {
+  top: 20%;
+  left: 3%;
+  width: 34%;
+  animation: atmoBreathe 15s ease-in-out infinite, lineDrift1 22s ease-in-out infinite;
+}
+
+.atmo-line-2 {
+  bottom: 16%;
+  right: 5%;
+  width: 26%;
+  animation: atmoBreathe 15s ease-in-out infinite 4s, lineDrift2 26s ease-in-out infinite 3s;
+}
+
+.atmo-line-3 {
+  top: 62%;
+  left: 12%;
+  width: 18%;
+  animation: atmoBreathe 19s ease-in-out infinite 7s, lineDrift3 30s ease-in-out infinite 5s;
+}
+
+@keyframes atmoBreathe {
+  0%, 100% { opacity: 0.16; }
+  50%      { opacity: 0.4; }
+}
+
+/* Movimento orgânico e contínuo: leve rotação + deslocamento
+   lateral, cada linha com sua própria amplitude e velocidade. */
+@keyframes lineDrift1 {
+  0%, 100% { transform: rotate(-4deg) translateX(0); }
+  50%      { transform: rotate(-2.4deg) translateX(10px); }
+}
+
+@keyframes lineDrift2 {
+  0%, 100% { transform: rotate(3deg) translateX(0); }
+  50%      { transform: rotate(4.6deg) translateX(-9px); }
+}
+
+@keyframes lineDrift3 {
+  0%, 100% { transform: rotate(-2deg) translateX(0); }
+  50%      { transform: rotate(-0.5deg) translateX(7px); }
+}
+
+.atmo-shape {
+  position: absolute;
+  display: block;
+  border: 1px solid rgba(212, 175, 55, 0.18);
+  will-change: transform;
+}
+
+.atmo-circle {
+  width: 86px;
+  height: 86px;
+  border-radius: 50%;
+  top: 10%;
+  right: 10%;
+  animation: atmoSpin 100s linear infinite;
+}
+
+.atmo-arc {
+  width: 130px;
+  height: 130px;
+  border-radius: 50%;
+  border-color: rgba(212, 175, 55, 0.16) transparent transparent transparent;
+  bottom: 8%;
+  left: 5%;
+  animation: atmoSpin 130s linear infinite reverse;
+}
+
+.atmo-dot {
+  width: 5px;
+  height: 5px;
+  border: none;
+  border-radius: 50%;
+  background: rgba(212, 175, 55, 0.35);
+  box-shadow: 0 0 6px rgba(212, 175, 55, 0.4);
+  top: 42%;
+  left: 2%;
+}
+
+@keyframes atmoSpin {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
+/* Parallax extremamente sutil ao rolar (aplicado via JS em
+   js/script.js, que define --scroll-progress em .hero) */
+.hero-atmosphere {
+  transform: translateY(calc(var(--scroll-progress, 0) * 30px));
+}
+
+@media (max-width: 900px) {
+  .atmo-line,
+  .atmo-shape {
+    display: none; /* reduz elementos decorativos no mobile */
+  }
+
+  .atmo-aurora {
+    filter: blur(60px);
+  }
+}
+
+/* ---------------------------------------------------------
+   2. LINHAS DE LUZ ENTRE SEÇÕES
+   Uma linha fina e discreta por seção, confinada à faixa de
+   padding superior (onde nunca há conteúdo), reutilizando a
+   mesma animação "respirando" do Hero para reforçar a
+   sensação de sistema único. Não precisa de z-index: por
+   estar só na área de padding, nunca sobrepõe texto/cards.
+--------------------------------------------------------- */
+
+.about,
+.services,
+.process,
+.cases,
+.services-guide,
+.faq-section {
+  position: relative;
+}
+
+.about::before,
+.services::before,
+.process::before,
+.cases::before,
+.services-guide::before,
+.faq-section::before {
+  content: "";
+  position: absolute;
+  top: 28px;
+  right: 6%;
+  width: 22%;
+  max-width: 220px;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(212, 175, 55, 0.26), transparent);
+  pointer-events: none;
+  animation: atmoBreathe 17s ease-in-out infinite;
+}
+
+.services::before   { animation-delay: 2s; }
+.process::before    { animation-delay: 4s; }
+.cases::before       { animation-delay: 6s; }
+.services-guide::before { animation-delay: 8s; }
+.faq-section::before { animation-delay: 10s; }
+
+@media (max-width: 700px) {
+  .about::before,
+  .services::before,
+  .process::before,
+  .cases::before,
+  .services-guide::before,
+  .faq-section::before {
+    display: none;
+  }
+}
+
+/* ---------------------------------------------------------
+   3. TIPOGRAFIA — reveal por máscara nos títulos de seção
+   Usa clip-path (não afeta layout) para "desvendar" o título
+   da esquerda para a direita, acionado pelo mesmo .reveal já
+   usado no resto do site. O Hero (h1) não é afetado — mantém
+   exatamente o comportamento já aprovado.
+--------------------------------------------------------- */
+
+.reveal .about-title h2,
+.reveal .services-title h2,
+.reveal .process-title h2,
+.reveal .cases-title h2,
+.reveal .guide-title h2,
+.reveal .faq-title h2 {
+  clip-path: inset(0 100% 0 0);
+  transition: clip-path 0.9s cubic-bezier(.16, .84, .44, 1) 0.1s;
+}
+
+.reveal.active .about-title h2,
+.reveal.active .services-title h2,
+.reveal.active .process-title h2,
+.reveal.active .cases-title h2,
+.reveal.active .guide-title h2,
+.reveal.active .faq-title h2 {
+  clip-path: inset(0 0 0 0);
+}
+
+/* ---------------------------------------------------------
+   4. CARDS — iluminação que acompanha o mouse
+   Adiciona uma 4ª camada de fundo ao .service-card já
+   aprovado (o gradiente/borda/sombra do BLOCO 2B continuam
+   intactos), controlada por variáveis CSS atualizadas no
+   mesmo listener de mousemove do tilt (BLOCO 4) — nenhum
+   listener novo é criado. Fica praticamente neutra até o
+   mouse passar por cima (--spot-o vai de 0 a 1).
+--------------------------------------------------------- */
+
+.service-card {
+  --mx: 50%;
+  --my: 50%;
+  --spot-o: 0;
+
+  background:
+    radial-gradient(240px circle at var(--mx) var(--my), rgba(212, 175, 55, var(--spot-o)), transparent 60%),
+    radial-gradient(120% 100% at 18% -12%, rgba(212, 175, 55, 0.05), rgba(212, 175, 55, 0) 55%),
+    linear-gradient(145deg, rgba(255, 255, 255, 0.035), rgba(255, 255, 255, 0.01)),
+    linear-gradient(160deg, #121212 0%, #070707 100%);
+}
+
+/* ---------------------------------------------------------
+   5. ACESSIBILIDADE — prefers-reduced-motion
+   Congela toda a atmosfera tecnológica numa versão estática
+   (sem remover os elementos, só as animações). O parallax de
+   scroll é desativado no JS pela mesma media query.
+--------------------------------------------------------- */
+
+@media (prefers-reduced-motion: reduce) {
+  .atmo-aurora,
+  .atmo-line,
+  .atmo-shape,
+  .about::before,
+  .services::before,
+  .process::before,
+  .cases::before,
+  .services-guide::before,
+  .faq-section::before {
+    animation: none;
+    opacity: 0.22;
+  }
+
+  .hero-atmosphere {
+    transform: none;
+  }
+
+  .reveal .about-title h2,
+  .reveal .services-title h2,
+  .reveal .process-title h2,
+  .reveal .cases-title h2,
+  .reveal .guide-title h2,
+  .reveal .faq-title h2 {
+    transition: none;
+  }
+}
+
+/* =========================================================
+   BLOCO 6 — REFORMULAÇÃO VISUAL GLOBAL (100% aditivo)
+   Nada acima foi removido ou alterado.
+
+   FORA DE ESCOPO NESTE BLOCO (conteúdo/valores intocados):
+   - Textos, links, contatos e valores de Preços
+   - Foto, CTAs e estrutura comercial do Hero
+   - Redesenho do .service-card / .case-card / .price-card
+========================================================= */
+
+/* ---------------------------------------------------------
+   6.0 — CONTEXTOS DE EMPILHAMENTO
+   Serviços e Diferenciais ganham a mesma base de Hero
+   (position + z-index:0) para conter com segurança a nova
+   camada decorativa .section-deco atrás do conteúdo.
+--------------------------------------------------------- */
+
+.services,
+.cases {
+  z-index: 0;
+}
+
+.section-deco {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  overflow: hidden;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 1.1s ease;
+}
+
+.reveal.active .section-deco {
+  opacity: 1;
+}
+
+/* ---------------------------------------------------------
+   6.1 — HERO: reveal cinematográfico do título + parallax
+   entre camadas. Texto, foto e CTAs continuam exatamente
+   onde estão — só a atmosfera de fundo ganha profundidade
+   extra e o H1 ganha uma varredura de revelação.
+--------------------------------------------------------- */
+
+/* A varredura por clip-path que existia aqui para o H1 do Hero
+   foi substituída pelo sistema de "split-line reveal" (BLOCO 9,
+   linha por linha, via GSAP) — mais próximo do efeito pedido.
+   O keyframe abaixo continua em uso pelos rótulos de seção
+   ("✦ ...") no BLOCO 8.6, por isso permanece aqui. */
+@keyframes heroTitleReveal {
+  from { clip-path: inset(0 100% 0 0); }
+  to   { clip-path: inset(0 0 0 0); }
+}
+
+/* Parallax: a camada inteira de atmosfera (.hero-atmosphere,
+   já movida via --scroll-progress no BLOCO 5) responde ao
+   scroll enquanto texto e foto permanecem estáveis — dentro
+   dela, cada forma mantém seu próprio drift lento (acima),
+   criando profundidade em duas velocidades diferentes. */
+
+.atmo-dot-2 {
+  width: 4px;
+  height: 4px;
+  border: none;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.3);
+  top: auto;
+  left: auto;
+  bottom: 22%;
+  right: 14%;
+}
+
+.atmo-line-v {
+  width: 1px;
+  height: 22%;
+  top: 8%;
+  right: 16%;
+  background: linear-gradient(180deg, transparent, rgba(212, 175, 55, 0.22), transparent);
+  transform: none;
+  animation: atmoBreathe 13s ease-in-out infinite;
+  animation-delay: 5s;
+}
+
+/* ---------------------------------------------------------
+   6.2 — SERVIÇOS e DIFERENCIAIS: elementos técnicos discretos
+   ao redor do conteúdo (cantos, linha, ponto), visíveis assim
+   que a seção entra na tela — não dependem de hover.
+--------------------------------------------------------- */
+
+.deco-line {
+  position: absolute;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(212, 175, 55, 0.22), transparent);
+  animation: atmoBreathe 16s ease-in-out infinite;
+}
+
+.deco-line-1 { top: 14%; left: 4%; width: 20%; transform: rotate(-3deg); }
+.deco-line-2 { bottom: 12%; right: 4%; width: 18%; transform: rotate(2deg); animation-delay: 3s; }
+
+.deco-corner {
+  position: absolute;
+  width: 34px;
+  height: 34px;
+  border: 1px solid rgba(212, 175, 55, 0.2);
+  opacity: 0.55;
+}
+
+.deco-corner-tr { top: 40px; right: 5%; border-left: none; border-bottom: none; }
+.deco-corner-bl { bottom: 40px; left: 5%; border-right: none; border-top: none; }
+
+.deco-dot {
+  position: absolute;
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: rgba(212, 175, 55, 0.35);
+  box-shadow: 0 0 6px rgba(212, 175, 55, 0.35);
+}
+
+.deco-dot-1 { top: 46%; right: 3%; }
+.deco-dot-2 { top: 50%; left: 3%; }
+
+/* ---------------------------------------------------------
+   6.3 — PROCESSO: linha de progresso que "desenha" com o
+   scroll (JS atualiza --process-progress em .process-timeline).
+   A linha cinza já existente entre as etapas é preservada; o
+   traço dourado abaixo apenas se sobrepõe a ela conforme o
+   usuário avança.
+--------------------------------------------------------- */
+
+.process-progress {
+  position: absolute;
+  left: 21px;
+  top: 4px;
+  width: 2px;
+  height: calc(100% - 8px);
+  background: rgba(255, 255, 255, 0.05);
+  overflow: hidden;
+  border-radius: 2px;
+}
+
+.process-progress-fill {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: calc(var(--process-progress, 0) * 1%);
+  background: linear-gradient(180deg, #d4af37, rgba(212, 175, 55, 0.25));
+  box-shadow: 0 0 8px rgba(212, 175, 55, 0.35);
+  transition: height 0.1s linear;
+}
+
+/* ---------------------------------------------------------
+   6.4 — ENTRADAS DIFERENCIADAS POR SEÇÃO
+   Cada bloco ganha uma combinação própria de opacity + blur +
+   transform, encadeada ao mesmo .reveal/.active já existente.
+   Nenhum dos gatilhos (IntersectionObserver) muda — só o que
+   acontece visualmente quando o "active" é adicionado.
+--------------------------------------------------------- */
+
+/* Foto do "Sobre mim": entra com blur + leve escala/rotação */
+.reveal .about-image {
+  opacity: 0;
+  filter: blur(14px);
+  transform: scale(0.94) rotate(-1.2deg);
+  transition:
+    opacity 1s cubic-bezier(.16, .84, .44, 1),
+    filter 1s cubic-bezier(.16, .84, .44, 1),
+    transform 1s cubic-bezier(.16, .84, .44, 1);
+}
+
+.reveal.active .about-image {
+  opacity: 1;
+  filter: blur(0);
+  transform: scale(1) rotate(0deg);
+}
+
+.reveal .experience-box {
+  opacity: 0;
+  transform: translate(-16px, 16px);
+  transition:
+    opacity 0.8s cubic-bezier(.16, .84, .44, 1) 0.35s,
+    transform 0.8s cubic-bezier(.16, .84, .44, 1) 0.35s;
+}
+
+.reveal.active .experience-box {
+  opacity: 1;
+  transform: translate(0, 0);
+}
+
+/* Cards de Serviços: companhia de blur sutil na entrada já
+   aprovada (opacity/translateY continuam iguais) */
+.reveal .service-card {
+  filter: blur(6px);
+  transition: filter 0.7s cubic-bezier(.16, .84, .44, 1);
+}
+
+.reveal.active .service-card {
+  filter: blur(0);
+}
+
+/* Diferenciais: identidade própria — leve escala em vez de
+   blur, para não repetir a mesma sensação de Serviços */
+.reveal .case-card {
+  transform: translateY(30px) scale(0.96);
+}
+
+.reveal.active .case-card {
+  transform: translateY(0) scale(1);
+}
+
+/* Preços: só a entrada (visual) ganha blur companion — nada
+   de conteúdo, link ou valor é tocado */
+.reveal .price-card {
+  filter: blur(6px);
+  transition: filter 0.7s cubic-bezier(.16, .84, .44, 1);
+}
+
+.reveal.active .price-card {
+  filter: blur(0);
+}
+
+/* Guia de Serviços e FAQ: leve escala complementando o
+   deslocamento vertical já existente (BLOCO 3) */
+.reveal .guide-item,
+.reveal .faq-item {
+  transform: translateY(24px) scale(0.985);
+}
+
+.reveal.active .guide-item,
+.reveal.active .faq-item {
+  transform: translateY(0) scale(1);
+}
+
+/* ---------------------------------------------------------
+   6.5 — RODAPÉ: fechamento cinematográfico
+   Luz localizada muito discreta + duas linhas convergindo
+   para o centro, visíveis quando o rodapé entra na tela.
+--------------------------------------------------------- */
+
+.footer {
+  position: relative;
+  z-index: 0;
+}
+
+.closing-atmosphere {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  overflow: hidden;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 1.2s ease;
+}
+
+.reveal.active .closing-atmosphere {
+  opacity: 1;
+}
+
+.closing-glow {
+  position: absolute;
+  width: 520px;
+  height: 260px;
+  left: 50%;
+  top: -60px;
+  transform: translateX(-50%);
+  background: radial-gradient(ellipse, rgba(212, 175, 55, 0.07), rgba(212, 175, 55, 0) 70%);
+  filter: blur(40px);
+}
+
+.closing-line {
+  position: absolute;
+  height: 1px;
+  width: 32%;
+  top: 50%;
+  background: linear-gradient(90deg, transparent, rgba(212, 175, 55, 0.2), transparent);
+  animation: atmoBreathe 14s ease-in-out infinite;
+}
+
+.closing-line-1 { left: 0; transform: rotate(-2deg); }
+.closing-line-2 { right: 0; transform: rotate(2deg); animation-delay: 3s; }
+
+.closing-atmosphere .atmo-dot {
+  top: 20%;
+  left: 50%;
+  background: rgba(212, 175, 55, 0.3);
+}
+
+.reveal .footer-container {
+  opacity: 0;
+  transform: translateY(26px) scale(0.99);
+  transition:
+    opacity 1s cubic-bezier(.16, .84, .44, 1) 0.1s,
+    transform 1s cubic-bezier(.16, .84, .44, 1) 0.1s;
+}
+
+.reveal.active .footer-container {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+}
+
+/* ---------------------------------------------------------
+   6.6 — RESPONSIVIDADE
+   Tablet: reduz a quantidade de elementos decorativos.
+   Mobile: mantém identidade (auroras, linhas, reveals) mas
+   remove os elementos mais pesados/geométricos e desliga o
+   parallax, evitando qualquer overflow ou custo extra.
+--------------------------------------------------------- */
+
+@media (max-width: 1100px) {
+  .deco-corner,
+  .closing-line-2 {
+    display: none;
+  }
+}
+
+@media (max-width: 700px) {
+  .section-deco,
+  .closing-atmosphere {
+    display: none;
+  }
+
+  .atmo-aurora-1,
+  .atmo-aurora-2 {
+    transform: none !important;
+  }
+
+  .reveal .about-image {
+    filter: blur(8px);
+    transform: scale(0.97);
+  }
+}
+
+/* ---------------------------------------------------------
+   6.7 — prefers-reduced-motion
+   Congela parallax, blur de entrada e a linha de progresso
+   numa versão estática — o conteúdo continua todo visível,
+   só sem o movimento.
+--------------------------------------------------------- */
+
+@media (prefers-reduced-motion: reduce) {
+  .atmo-aurora-1,
+  .atmo-aurora-2,
+  .atmo-line-v {
+    transform: none;
+    animation: none;
+  }
+
+  .deco-line,
+  .closing-line {
+    animation: none;
+  }
+
+  .section-deco,
+  .closing-atmosphere {
+    transition: none;
+  }
+
+  .reveal .about-image,
+  .reveal .experience-box,
+  .reveal .service-card,
+  .reveal .case-card,
+  .reveal .price-card,
+  .reveal .guide-item,
+  .reveal .faq-item,
+  .reveal .footer-container {
+    transition: none;
+    filter: none;
+    transform: none;
+  }
+
+  .process-progress-fill {
+    height: 100%;
+    transition: none;
+  }
+}
+
+/* =========================================================
+   BLOCO 7 — VISUAL ENGINE
+   Reconstrução visual real: os valores dos blocos anteriores
+   eram sutis demais para serem percebidos. Este bloco os
+   substitui por uma composição muito mais visível — mesma
+   identidade preto + dourado, presença muito maior.
+
+   Conteúdo, preços, contatos, links e estrutura comercial
+   continuam 100% intocados — só a camada visual muda.
+========================================================= */
+
+/* ---------------------------------------------------------
+   7.0 — PRIMITIVOS DO SISTEMA
+   Peças reutilizáveis do "visual engine": anéis, órbitas,
+   nós de conexão, linhas de grade, labels técnicos, glows.
+   Todas aria-hidden, position:absolute, pointer-events:none.
+--------------------------------------------------------- */
+
+.tech-ring {
+  position: absolute;
+  border-radius: 50%;
+  border: 1px solid rgba(212, 175, 55, 0.28);
+  pointer-events: none;
+}
+
+.tech-ring-1 { width: 260px; height: 260px; animation: techSpin 70s linear infinite; }
+.tech-ring-2 {
+  width: 380px;
+  height: 380px;
+  border-color: rgba(255, 255, 255, 0.08);
+  animation: techSpin 100s linear infinite reverse;
+}
+
+.tech-orbit {
+  position: absolute;
+  width: 180px;
+  height: 180px;
+  border: 1px dashed rgba(212, 175, 55, 0.22);
+  border-radius: 50%;
+  animation: techSpin 34s linear infinite;
+}
+
+.tech-node {
+  position: absolute;
+  top: -4px;
+  left: 50%;
+  width: 8px;
+  height: 8px;
+  margin-left: -4px;
+  border-radius: 50%;
+  background: var(--primary);
+  box-shadow: 0 0 12px 2px rgba(212, 175, 55, 0.7);
+}
+
+@keyframes techSpin {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
+.tech-grid-line {
+  position: absolute;
+  background: linear-gradient(90deg, transparent, rgba(212, 175, 55, 0.16), transparent);
+}
+
+.tech-grid-line-v {
+  top: 0;
+  left: 50%;
+  width: 1px;
+  height: 100%;
+  background: linear-gradient(180deg, transparent, rgba(255, 255, 255, 0.07) 15%, rgba(255, 255, 255, 0.07) 85%, transparent);
+}
+
+.tech-grid-line-h {
+  top: 50%;
+  left: 0;
+  width: 100%;
+  height: 1px;
+}
+
+.tech-label {
+  position: absolute;
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 3px;
+  color: rgba(212, 175, 55, 0.55);
+  text-transform: uppercase;
+}
+
+.tech-label-1 { top: 6%; left: 3%; }
+
+.tech-label-corner {
+  top: 32px;
+  right: 6%;
+}
+
+.tech-marker {
+  position: absolute;
+  width: 14px;
+  height: 14px;
+  border-top: 1px solid rgba(212, 175, 55, 0.4);
+  border-right: 1px solid rgba(212, 175, 55, 0.4);
+}
+
+.tech-marker-1 { top: 8%; right: 6%; }
+.tech-marker-2 { bottom: 10%; left: 8%; transform: rotate(180deg); }
+
+.tech-glow {
+  position: absolute;
+  width: 640px;
+  height: 640px;
+  border-radius: 50%;
+  filter: blur(90px);
+  background: radial-gradient(circle, rgba(212, 175, 55, 0.14), rgba(212, 175, 55, 0) 68%);
+}
+
+.tech-orb {
+  position: absolute;
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  left: 50%;
+  top: 40%;
+  transform: translate(-50%, -50%);
+  background: radial-gradient(circle at 35% 30%, rgba(255, 244, 214, 0.9), rgba(212, 175, 55, 0.25) 45%, rgba(212, 175, 55, 0) 72%);
+  filter: blur(2px);
+  opacity: 0.55;
+  animation: techPulse 6s ease-in-out infinite;
+}
+
+@keyframes techPulse {
+  0%, 100% { opacity: 0.4; transform: translate(-50%, -50%) scale(1); }
+  50%      { opacity: 0.7; transform: translate(-50%, -50%) scale(1.08); }
+}
+
+/* ---------------------------------------------------------
+   7.1 — FUNDOS DAS SEÇÕES (substitui os valores tímidos do
+   BLOCO 3). Ritmo real preto ↔ grafite, textura de grade
+   visível e mesh de luz muito mais presente em todas.
+--------------------------------------------------------- */
+
+.about {
+  background:
+    var(--tech-grid),
+    radial-gradient(90% 60% at 15% 0%, rgba(212, 175, 55, 0.10), rgba(212, 175, 55, 0) 60%),
+    linear-gradient(180deg, var(--bg-graphite) 0%, var(--bg-graphite-2) 100%);
+  box-shadow: inset 0 1px 0 rgba(212, 175, 55, 0.08);
+}
+
+.services {
+  background:
+    var(--tech-grid),
+    radial-gradient(80% 55% at 85% 0%, rgba(212, 175, 55, 0.12), rgba(212, 175, 55, 0) 62%),
+    linear-gradient(180deg, var(--bg-graphite) 0%, var(--bg-graphite-2) 100%);
+  box-shadow: inset 0 1px 0 rgba(212, 175, 55, 0.08);
+}
+
+.process {
+  background:
+    var(--tech-grid),
+    radial-gradient(70% 50% at 50% 0%, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0) 65%),
+    var(--bg-black);
+  box-shadow: inset 0 1px 0 rgba(212, 175, 55, 0.06);
+}
+
+.cases {
+  background:
+    var(--tech-grid),
+    radial-gradient(90% 60% at 10% 100%, rgba(212, 175, 55, 0.11), rgba(212, 175, 55, 0) 62%),
+    linear-gradient(180deg, var(--bg-graphite) 0%, var(--bg-graphite-2) 100%);
+  box-shadow: inset 0 1px 0 rgba(212, 175, 55, 0.08);
+}
+
+.services-guide {
+  background:
+    var(--tech-grid),
+    radial-gradient(80% 55% at 90% 100%, rgba(212, 175, 55, 0.09), rgba(212, 175, 55, 0) 60%),
+    var(--bg-black);
+  box-shadow: inset 0 1px 0 rgba(212, 175, 55, 0.06);
+}
+
+.faq-section {
+  background:
+    var(--tech-grid),
+    radial-gradient(80% 55% at 15% 0%, rgba(212, 175, 55, 0.09), rgba(212, 175, 55, 0) 60%),
+    var(--bg-black);
+  box-shadow: inset 0 1px 0 rgba(212, 175, 55, 0.06);
+}
+
+.pricing {
+  background-image: var(--tech-grid);
+}
+
+/* ---------------------------------------------------------
+   7.2 — AMPLIFICAÇÃO DAS CAMADAS EXISTENTES
+   Os elementos do BLOCO 5/6 continuam os mesmos — só ficam
+   visíveis de verdade (opacidade, tamanho e alcance maiores).
+--------------------------------------------------------- */
+
+.atmo-aurora-1 {
+  width: 760px;
+  height: 760px;
+  background: radial-gradient(circle, rgba(212, 175, 55, 0.22), rgba(212, 175, 55, 0) 68%);
+}
+
+.atmo-aurora-2 {
+  width: 620px;
+  height: 620px;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.10), rgba(255, 255, 255, 0) 68%);
+}
+
+.atmo-line,
+.deco-line,
+.closing-line {
+  height: 2px;
+  background: linear-gradient(90deg, transparent, rgba(212, 175, 55, 0.5), transparent);
+}
+
+.atmo-shape {
+  border-color: rgba(212, 175, 55, 0.4);
+}
+
+.atmo-dot,
+.deco-dot {
+  width: 6px;
+  height: 6px;
+  background: rgba(212, 175, 55, 0.7);
+  box-shadow: 0 0 14px 3px rgba(212, 175, 55, 0.55);
+}
+
+.deco-corner {
+  width: 54px;
+  height: 54px;
+  border-color: rgba(212, 175, 55, 0.4);
+  opacity: 0.85;
+}
+
+.section-deco {
+  opacity: 1; /* substitui o fade tímido — visível assim que a página carrega */
+  transition: none;
+}
+
+.tech-glow-services { top: -180px; right: -220px; }
+.tech-glow-cases { bottom: -220px; left: -220px; }
+.tech-glow-pricing {
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 900px;
+  height: 500px;
+  border-radius: 50%;
+}
+
+/* ---------------------------------------------------------
+   7.3 — TIPOGRAFIA: hierarquia real entre eyebrow, título,
+   labels e números. Fonte monoespaçada nova só nos elementos
+   técnicos — o corpo do texto continua em Poppins.
+--------------------------------------------------------- */
+
+.services-title > span:first-child,
+.about-title > span:first-child,
+.process-title > span:first-child,
+.cases-title > span:first-child,
+.pricing-title > span:first-child,
+.guide-title > span:first-child,
+.faq-title > span:first-child {
+  font-family: var(--mono);
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 5px;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.services-title > span:first-child::before,
+.about-title > span:first-child::before,
+.process-title > span:first-child::before,
+.cases-title > span:first-child::before,
+.pricing-title > span:first-child::before,
+.guide-title > span:first-child::before,
+.faq-title > span:first-child::before {
+  content: "";
+  width: 22px;
+  height: 1px;
+  background: var(--primary);
+  display: inline-block;
+}
+
+.service-num,
+.case-num {
+  font-family: var(--mono);
+}
+
+.case-num {
+  position: absolute;
+  top: 26px;
+  right: 30px;
+  font-size: 52px;
+  font-weight: 600;
+  color: rgba(212, 175, 55, 0.14);
+  line-height: 1;
+}
+
+/* ---------------------------------------------------------
+   7.4 — SERVIÇOS: cards como componentes de produto digital
+   Barra de destaque no topo, borda dinâmica mais evidente,
+   spotlight bem mais perceptível, ícone com anel técnico.
+--------------------------------------------------------- */
+
+.service-card {
+  border-width: 1px;
+  border-color: rgba(212, 175, 55, 0.22);
+}
+
+.service-card::before {
+  height: 2px;
+  background: linear-gradient(90deg, transparent, rgba(212, 175, 55, 0.9), transparent);
+  opacity: 0.55;
+}
+
+.service-card:hover::before {
+  opacity: 1;
+}
+
+.services .services-grid .service-card:hover {
+  border-color: rgba(212, 175, 55, 0.6);
+  box-shadow:
+    0 40px 80px -20px rgba(0, 0, 0, 0.85),
+    inset 0 0 60px rgba(212, 175, 55, 0.09),
+    inset 0 1px 0 rgba(255, 255, 255, 0.07);
+}
+
+.service-card {
+  --spot-o: 0.14; /* presença mínima mesmo sem hover — antes era 0 */
+}
+
+.service-card .service-icon {
+  position: relative;
+}
+
+.service-card .service-icon::after {
+  content: "";
+  position: absolute;
+  inset: -6px;
+  border: 1px solid rgba(212, 175, 55, 0.25);
+  border-radius: 50%;
+  animation: techSpin 40s linear infinite;
+}
+
+.service-top .service-num {
+  color: rgba(212, 175, 55, 0.16);
+}
+
+/* Entrada em sequência real: delay maior entre cards para o
+   efeito "CARD 1 → CARD 2 → CARD 3 → CARD 4" ficar visível */
+.service-card:nth-child(1) { transition-delay: 0.05s; }
+.service-card:nth-child(2) { transition-delay: 0.22s; }
+.service-card:nth-child(3) { transition-delay: 0.39s; }
+.service-card:nth-child(4) { transition-delay: 0.56s; }
+
+/* ---------------------------------------------------------
+   7.5 — PROCESSO: fluxo de sistema real
+   O círculo do número passa a ser o "nó" da linha: maior,
+   com anel dourado e glow. A linha de progresso fica mais
+   grossa e visível. Cada etapa acende quando a linha chega.
+--------------------------------------------------------- */
+
+.process-timeline {
+  padding-left: 4px;
+}
+
+.process-progress {
+  left: 27px;
+  width: 3px;
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.process-progress-fill {
+  box-shadow: 0 0 16px 2px rgba(212, 175, 55, 0.55);
+}
+
+.step-number {
+  position: relative;
+  min-width: 58px;
+  height: 58px;
+  font-size: 1.4rem;
+  font-family: var(--mono);
+  background: linear-gradient(160deg, #1a1a1a, #0a0a0a);
+  border: 1px solid rgba(212, 175, 55, 0.35);
+  box-shadow: 0 0 0 4px var(--bg-black), 0 0 22px rgba(212, 175, 55, 0.18);
+  transition: border-color 0.5s ease, box-shadow 0.5s ease, color 0.5s ease;
+}
+
+/* Acende quando a etapa entra na viewport (reaproveita o
+   IntersectionObserver já existente) */
+.reveal.active .step-number {
+  border-color: rgba(212, 175, 55, 0.8);
+  box-shadow: 0 0 0 4px var(--bg-black), 0 0 32px rgba(212, 175, 55, 0.4);
+  color: var(--primary);
+}
+
+.process-step:not(:last-child)::after {
+  left: 28px;
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.step-tag {
+  font-family: var(--mono);
+  letter-spacing: 2px;
+}
+
+/* Entrada em sequência das etapas (BLOCO 3 já faz o stagger;
+   aqui só ampliamos o espaçamento entre elas) */
+.process-step:nth-child(2) { transition-delay: 0.18s; }
+.process-step:nth-child(3) { transition-delay: 0.34s; }
+.process-step:nth-child(4) { transition-delay: 0.5s; }
+
+/* ---------------------------------------------------------
+   7.6 — DIFERENCIAIS: composição editorial assimétrica
+   Sai do grid "4 caixas iguais": 2 colunas alternando largura,
+   números grandes parcialmente decorativos, cartão com corte
+   de canto (clip-path) em vez de esquina reta.
+--------------------------------------------------------- */
+
+.cases-grid {
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  gap: 24px;
+}
+
+.case-card {
+  grid-column: span 6;
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(155deg, rgba(255, 255, 255, 0.045), rgba(255, 255, 255, 0.01));
+  border: 1px solid rgba(212, 175, 55, 0.18);
+  clip-path: polygon(0 0, 100% 0, 100% 100%, 22px 100%, 0 calc(100% - 22px));
+  padding: 38px 34px 34px;
+}
+
+.case-card:nth-child(1) { grid-column: span 7; }
+.case-card:nth-child(2) { grid-column: span 5; }
+.case-card:nth-child(3) { grid-column: span 5; }
+.case-card:nth-child(4) { grid-column: span 7; }
+
+.case-card:hover {
+  border-color: rgba(212, 175, 55, 0.45);
+}
+
+.case-card .service-icon {
+  margin-bottom: 6px;
+}
+
+@media (max-width: 900px) {
+  .cases-grid { grid-template-columns: 1fr; }
+  .case-card,
+  .case-card:nth-child(1),
+  .case-card:nth-child(2),
+  .case-card:nth-child(3),
+  .case-card:nth-child(4) {
+    grid-column: span 1;
+  }
+}
+
+/* ---------------------------------------------------------
+   7.7 — CTA FINAL / RODAPÉ: encerramento cinematográfico
+--------------------------------------------------------- */
+
+.closing-glow {
+  width: 900px;
+  height: 420px;
+  background: radial-gradient(ellipse, rgba(212, 175, 55, 0.16), rgba(212, 175, 55, 0) 70%);
+  filter: blur(60px);
+}
+
+.closing-ring {
+  top: -40px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 300px;
+  height: 300px;
+}
+
+.footer {
+  background:
+    var(--tech-grid),
+    radial-gradient(60% 80% at 50% 0%, rgba(212, 175, 55, 0.08), rgba(212, 175, 55, 0) 65%),
+    var(--bg-black);
+  border-top: 1px solid rgba(212, 175, 55, 0.15);
+}
+
+.footer-brand h3 {
+  font-family: var(--mono);
+  letter-spacing: 1px;
+}
+
+/* ---------------------------------------------------------
+   7.8 — HERO: reforço final de presença
+--------------------------------------------------------- */
+
+.hero-text h1 {
+  letter-spacing: -2px;
+}
+
+.tech-ring-1 { top: 8%; right: 4%; }
+.tech-ring-2 { top: 4%; right: -2%; }
+.tech-orbit { bottom: 6%; left: 2%; }
+.tech-marker-1, .tech-marker-2 { opacity: 0.8; }
+
+/* ---------------------------------------------------------
+   7.9 — RESPONSIVIDADE
+   Tablet: reduz primitivos maiores. Mobile: mantém identidade
+   (grid, mesh, reveals) mas remove anéis/órbitas grandes e a
+   grade técnica de fundo de maior contraste, evitando overflow
+   e custo de composição em telas pequenas.
+--------------------------------------------------------- */
+
+@media (max-width: 1100px) {
+  .tech-ring-2,
+  .tech-orbit,
+  .tech-glow {
+    display: none;
+  }
+}
+
+@media (max-width: 700px) {
+  /* Reabre o que o BLOCO 6 escondia por completo no mobile —
+     a identidade técnica deve continuar presente, só mais
+     simples (linha + ponto + canto, sem os primitivos maiores) */
+  .section-deco,
+  .closing-atmosphere {
+    display: block;
+    opacity: 1;
+  }
+
+  .tech-ring,
+  .tech-orbit,
+  .tech-orb,
+  .tech-grid-line,
+  .tech-marker,
+  .tech-label {
+    display: none;
+  }
+
+  :root {
+    --tech-grid: none;
+  }
+
+  .about,
+  .services,
+  .process,
+  .cases,
+  .services-guide,
+  .faq-section,
+  .footer {
+    background-image: none;
+  }
+
+  .about,
+  .services,
+  .cases {
+    background-color: var(--bg-graphite);
+  }
+
+  .process,
+  .services-guide,
+  .faq-section,
+  .footer {
+    background-color: var(--bg-black);
+  }
+
+  .case-card {
+    clip-path: none;
+    border-radius: 15px;
+  }
+}
+
+/* ---------------------------------------------------------
+   7.10 — prefers-reduced-motion
+--------------------------------------------------------- */
+
+@media (prefers-reduced-motion: reduce) {
+  .tech-ring,
+  .tech-orbit,
+  .tech-orb,
+  .service-card .service-icon::after {
+    animation: none;
+  }
+
+  .step-number {
+    transition: none;
+  }
+}
+
+/* =========================================================
+   BLOCO 8 — SISTEMA 3D PREMIUM (100% aditivo)
+   Nova camada de profundidade e interação por cima de tudo que
+   já existe (BLOCOS 1-7 continuam intocados, com pequenas
+   exceções pontuais assinaladas abaixo, todas de reforço visual
+   — nenhum texto, preço, link ou estrutura muda).
+
+   Regra do sistema: toda a interação contínua por mouse usa as
+   propriedades independentes `rotate` / `translate` (CSS
+   Transforms Level 2) em vez de `transform`. Assim, nunca disputa
+   com os `transform`/animações já aprovados (hover, entrada,
+   drift, spin) — as duas camadas somam visualmente em vez de uma
+   sobrescrever a outra. Em navegadores muito antigos que não
+   reconhecem `rotate`/`translate` como propriedades, a declaração
+   é simplesmente ignorada e o site continua exatamente como
+   antes (progressive enhancement).
+========================================================= */
+
+/* ---------------------------------------------------------
+   8.0 — PERSPECTIVA GLOBAL
+   Necessária para o translateZ do scroll (8.5) e para a
+   profundidade do Hero (8.2/8.3) terem efeito visual real.
+--------------------------------------------------------- */
+
+body {
+  perspective: 1600px;
+}
+
+.hero {
+  perspective: 1400px;
+}
+
+.hero-text,
+.hero-atmosphere {
+  transform-style: preserve-3d;
+}
+
+/* ---------------------------------------------------------
+   8.1 — TILT 3D + LUZ NOS CARDS
+   rotate/translate aplicados via JS (js/script.js) somando-se
+   à elevação/escala que cada card já tem no :hover — nenhuma
+   delas foi alterada aqui.
+--------------------------------------------------------- */
+
+.service-card,
+.case-card,
+.price-card {
+  transform-style: preserve-3d;
+}
+
+/* Reflexo de luz que acompanha o cursor, no mesmo padrão já
+   aprovado para os cards de Serviços — agora também em
+   Diferenciais e Preços. */
+.case-card {
+  --mx: 50%;
+  --my: 50%;
+  --spot-o: 0;
+  /* Reafirma o gradiente diagonal já aprovado (BLOCO 7.6) e
+     acrescenta o reflexo de luz por cima — sem isto, definir
+     background-image aqui sozinho apagaria aquele gradiente. */
+  background-image:
+    radial-gradient(220px circle at var(--mx) var(--my), rgba(212, 175, 55, var(--spot-o)), transparent 60%),
+    linear-gradient(155deg, rgba(255, 255, 255, 0.045), rgba(255, 255, 255, 0.01));
+  background-repeat: no-repeat;
+}
+
+.price-card {
+  --mx: 50%;
+  --my: 50%;
+  --spot-o: 0;
+  background-image: radial-gradient(240px circle at var(--mx) var(--my), rgba(212, 175, 55, var(--spot-o)), transparent 60%);
+  background-repeat: no-repeat;
+}
+
+.pricing-grid {
+  perspective: 1200px;
+}
+
+/* ---------------------------------------------------------
+   8.2 — HERO: camadas de profundidade reagindo ao mouse
+   JS define --hx/--hy (-1..1) em .hero. Cada camada se move a
+   uma velocidade/profundidade diferente — foto em primeiro
+   plano (mais deslocamento + vem "para frente"), texto um
+   pouco atrás, elementos decorativos de fundo com o menor
+   deslocamento. Título e foto continuam no lugar de sempre:
+   isto só adiciona um deslocamento suave por cima.
+--------------------------------------------------------- */
+
+.hero-img {
+  translate: calc(var(--hx, 0) * 16px) calc(var(--hy, 0) * 12px) 32px;
+  transition: translate 0.5s cubic-bezier(.16, .84, .44, 1);
+}
+
+.hero-text {
+  translate: calc(var(--hx, 0) * 9px) calc(var(--hy, 0) * 6px) 14px;
+  transition: translate 0.5s cubic-bezier(.16, .84, .44, 1);
+}
+
+.tech-ring-1 {
+  translate: calc(var(--hx, 0) * 20px) calc(var(--hy, 0) * 14px);
+  transition: translate 0.7s cubic-bezier(.16, .84, .44, 1);
+}
+
+.tech-ring-2 {
+  translate: calc(var(--hx, 0) * -14px) calc(var(--hy, 0) * -10px);
+  transition: translate 0.7s cubic-bezier(.16, .84, .44, 1);
+}
+
+.atmo-aurora-1 {
+  translate: calc(var(--hx, 0) * 8px) calc(var(--hy, 0) * 6px);
+  transition: translate 0.9s cubic-bezier(.16, .84, .44, 1);
+}
+
+.atmo-aurora-2 {
+  translate: calc(var(--hx, 0) * -8px) calc(var(--hy, 0) * -6px);
+  transition: translate 0.9s cubic-bezier(.16, .84, .44, 1);
+}
+
+.tech-panel {
+  translate: calc(var(--hx, 0) * 12px) calc(var(--hy, 0) * 9px) -40px;
+  transition: translate 0.7s cubic-bezier(.16, .84, .44, 1);
+}
+
+/* ---------------------------------------------------------
+   8.3 — ELEMENTO ABSTRATO: placa de vidro flutuante
+   Painel 3D discreto, só decorativo (aria-hidden), reforçando
+   a sensação de camadas no Hero sem virar objeto chamativo.
+--------------------------------------------------------- */
+
+.tech-panel {
+  position: absolute;
+  top: 24%;
+  right: 20%;
+  width: 130px;
+  height: 82px;
+  border-radius: 14px;
+  border: 1px solid rgba(212, 175, 55, 0.22);
+  background: linear-gradient(155deg, rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0.015));
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  rotate: 0 1 0 25deg;
+  box-shadow: 0 20px 40px -20px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.06);
+  pointer-events: none;
+}
+
+/* ---------------------------------------------------------
+   8.4 — TIPOGRAFIA 3D: título do Hero
+   Profundidade elegante via sombra em camadas + leve resposta
+   ao mouse (mesmo eixo único do tilt dos cards). O reveal em
+   "varredura" (clip-path) do BLOCO 6 continua exatamente igual
+   — esta rotação soma-se por cima, sem tocar no `transform`
+   usado por aquela animação de entrada.
+--------------------------------------------------------- */
+
+.hero-text h1 {
+  text-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.06),
+    0 10px 26px rgba(0, 0, 0, 0.45),
+    0 2px 42px rgba(212, 175, 55, 0.12);
+  rotate: calc(var(--hy, 0) * -1) calc(var(--hx, 0) * 1) 0 2.5deg;
+  transition: rotate 0.5s cubic-bezier(.16, .84, .44, 1);
+}
+
+/* ---------------------------------------------------------
+   8.5 — SCROLL 3D: seções "aproximam-se" da câmera
+   Reforça o reveal genérico já existente (BLOCO 3) com
+   translateZ, usando a perspective do body (8.0). Cards de
+   Serviços/Diferenciais/Preços ganham também uma pequena
+   rotação 3D na entrada, em vez de só translateY.
+--------------------------------------------------------- */
+
+.reveal:not(.hero):not(.pricing):not(.service-card):not(.case-card):not(.price-card) {
+  transform: translateY(40px) scale(0.985) translateZ(-140px);
+}
+
+.reveal.active:not(.hero):not(.pricing):not(.service-card):not(.case-card):not(.price-card) {
+  transform: translateY(0) scale(1) translateZ(0);
+}
+
+.reveal .service-card {
+  transform: translateY(30px) rotateY(7deg) translateZ(-60px);
+}
+
+.reveal.active .service-card {
+  transform: translateY(0) rotateY(0deg) translateZ(0);
+}
+
+.reveal .case-card {
+  transform: translateY(30px) scale(0.96) rotateY(-7deg) translateZ(-60px);
+}
+
+.reveal.active .case-card {
+  transform: translateY(0) scale(1) rotateY(0deg) translateZ(0);
+}
+
+.reveal .price-card {
+  transform: translateY(30px) rotateY(7deg) translateZ(-60px);
+}
+
+.reveal.active .price-card {
+  transform: translateY(0) rotateY(0deg) translateZ(0);
+}
+
+/* ---------------------------------------------------------
+   8.6 — SCROLL REVEAL AVANÇADO: máscara nos rótulos de seção
+   Mesma técnica "varredura" já aprovada para o H1 do Hero,
+   estendida aos pequenos rótulos "✦ ..." de cada seção — uma
+   entrada cinematográfica extra, diferente do fade dos títulos.
+--------------------------------------------------------- */
+
+.about-title > span,
+.services-title > span,
+.cases-title > span,
+.pricing-title > span,
+.faq-title > span,
+.guide-title > span {
+  display: inline-block;
+  clip-path: inset(0 100% 0 0);
+}
+
+.reveal.active .about-title > span,
+.reveal.active .services-title > span,
+.reveal.active .cases-title > span,
+.reveal.active .pricing-title > span,
+.reveal.active .faq-title > span,
+.reveal.active .guide-title > span {
+  animation: heroTitleReveal 0.8s cubic-bezier(.16, .84, .44, 1) both;
+}
+
+/* ---------------------------------------------------------
+   8.7 — GLASSMORPHISM CONTROLADO
+   Só nos elementos flutuantes/de destaque indicados — o fundo
+   principal do site continua preto/grafite normalmente.
+--------------------------------------------------------- */
+
+.experience-box {
+  background: rgba(17, 17, 17, 0.45);
+  backdrop-filter: blur(18px) saturate(140%);
+  -webkit-backdrop-filter: blur(18px) saturate(140%);
+  border: 1px solid rgba(255, 255, 255, 0.10);
+  box-shadow: 0 20px 40px -18px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.06);
+}
+
+.premium-box {
+  background: rgba(255, 255, 255, 0.02);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+/* ---------------------------------------------------------
+   8.8 — MICROINTERAÇÕES: profundidade extra em botões e ícones
+   Somado via translate/rotate independentes — a elevação e o
+   brilho que os botões/ícones já tinham continuam idênticos.
+--------------------------------------------------------- */
+
+.btn,
+.btn-secondary {
+  translate: 0 0 0;
+  transition: translate 0.35s ease;
+}
+
+.btn:hover,
+.btn-secondary:hover {
+  translate: 0 0 18px;
+}
+
+.service-card:hover .service-icon,
+.case-card:hover .service-icon {
+  rotate: 0 0 1 6deg;
+  transition: rotate 0.35s cubic-bezier(.22, .9, .32, 1);
+}
+
+/* ---------------------------------------------------------
+   8.9 — MOBILE: reduz a intensidade do 3D
+   Mantém o scroll reveal e as microinterações por toque, mas
+   remove profundidade/perspective mais pesada (tilt já não
+   roda no JS por não haver mouse fino).
+--------------------------------------------------------- */
+
+@media (max-width: 900px) {
+  .tech-panel {
+    display: none;
+  }
+}
+
+@media (max-width: 700px) {
+  body {
+    perspective: none;
+  }
+
+  .reveal:not(.hero):not(.pricing):not(.service-card):not(.case-card):not(.price-card) {
+    transform: translateY(24px) scale(0.99);
+  }
+
+  .reveal.active:not(.hero):not(.pricing):not(.service-card):not(.case-card):not(.price-card) {
+    transform: translateY(0) scale(1);
+  }
+
+  .reveal .service-card,
+  .reveal .case-card,
+  .reveal .price-card {
+    transform: translateY(20px);
+  }
+
+  .reveal.active .service-card,
+  .reveal.active .case-card,
+  .reveal.active .price-card {
+    transform: translateY(0);
+  }
+
+  .btn:hover,
+  .btn-secondary:hover {
+    translate: 0 0 0;
+  }
+}
+
+/* ---------------------------------------------------------
+   8.10 — ACESSIBILIDADE: prefers-reduced-motion
+   Remove tilt, parallax por mouse, translateZ de scroll e a
+   máscara animada dos rótulos — o conteúdo permanece 100%
+   visível, só sem o movimento.
+--------------------------------------------------------- */
+
+@media (prefers-reduced-motion: reduce) {
+  body,
+  .hero {
+    perspective: none;
+  }
+
+  .hero-img,
+  .hero-text,
+  .hero-text h1,
+  .tech-ring-1,
+  .tech-ring-2,
+  .atmo-aurora-1,
+  .atmo-aurora-2,
+  .tech-panel,
+  .service-card,
+  .case-card,
+  .price-card,
+  .btn,
+  .btn-secondary {
+    rotate: none;
+    translate: none;
+    transition: none;
+  }
+
+  .about-title > span,
+  .services-title > span,
+  .cases-title > span,
+  .pricing-title > span,
+  .faq-title > span,
+  .guide-title > span {
+    animation: none;
+    clip-path: inset(0 0 0 0);
+  }
+
+  .reveal:not(.hero):not(.pricing):not(.service-card):not(.case-card):not(.price-card),
+  .reveal.active:not(.hero):not(.pricing):not(.service-card):not(.case-card):not(.price-card),
+  .reveal .service-card,
+  .reveal.active .service-card,
+  .reveal .case-card,
+  .reveal.active .case-card,
+  .reveal .price-card,
+  .reveal.active .price-card {
+    transform: none;
+  }
+
+  .service-card:hover .service-icon,
+  .case-card:hover .service-icon {
+    rotate: none;
+  }
+}
+
+/* =========================================================
+   BLOCO 9 — SISTEMA CINEMATOGRÁFICO 3D (GSAP + ScrollTrigger)
+   Camada aditiva sobre os BLOCOS 1-8. Todo o controle de
+   quando/como cada efeito roda está em js/cinematic.js; aqui só
+   ficam os estilos que esse script consome (spans de split-line,
+   profundidade interna dos cards, linha viajante) e os ajustes
+   pontuais para a seção Processo, que precisava do mesmo
+   comportamento 3D das demais.
+
+   Segurança: nada aqui esconde conteúdo por padrão. As spans de
+   "split-line" só existem depois que o JS as cria — se o GSAP não
+   carregar, os títulos permanecem como texto normal, sempre
+   visível.
+========================================================= */
+
+/* ---------------------------------------------------------
+   9.1 — SPLIT-LINE REVEAL (títulos)
+--------------------------------------------------------- */
+
+.split-line {
+  display: block;
+  overflow: hidden;
+}
+
+.split-line-inner {
+  display: inline-block;
+  will-change: transform, opacity;
+}
+
+/* ---------------------------------------------------------
+   9.2 — PROCESSO: profundidade 3D real na entrada das etapas
+   (o restante do comportamento — reveal, reversibilidade,
+   stagger por nth-child — já existe nos BLOCOS 3 e 7.5 e
+   continua intocado; isto só acrescenta rotateX/translateZ).
+--------------------------------------------------------- */
+
+.process-timeline {
+  perspective: 1100px;
+}
+
+.reveal .process-step {
+  transform: translateY(24px) translateZ(-70px) rotateX(8deg);
+}
+
+.reveal.active .process-step {
+  transform: translateY(0) translateZ(0) rotateX(0deg);
+}
+
+/* ---------------------------------------------------------
+   9.3 — PROFUNDIDADE INTERNA DOS CARDS
+   Elementos internos em planos Z diferentes do card — dentro do
+   preserve-3d já definido no BLOCO 8, o resultado é um objeto
+   com profundidade real, não só o card inteiro inclinando.
+--------------------------------------------------------- */
+
+.service-icon {
+  transform: translateZ(22px);
+}
+
+.service-card:hover .service-icon {
+  transform: translateZ(22px) translateY(-3px) scale(1.07);
+}
+
+.case-card:hover .service-icon {
+  transform: translateZ(22px) scale(1.08);
+}
+
+.service-card h3,
+.case-card h3 {
+  transform: translateZ(14px);
+}
+
+.plan-name {
+  transform: translateZ(20px);
+}
+
+.price-card h3 {
+  transform: translateZ(14px);
+}
+
+/* ---------------------------------------------------------
+   9.4 — LINHA VIAJANTE ENTRE SEÇÕES
+   Fixa na lateral da tela; o traço (stroke-dasharray/-dashoffset)
+   é animado pelo JS conforme o scroll da página inteira — reforça
+   a continuidade entre Hero, Serviços, Processo, Diferenciais,
+   Preços, CTA e Rodapé.
+--------------------------------------------------------- */
+
+.cinematic-travel-line {
+  position: fixed;
+  top: 0;
+  right: 18px;
+  width: 2px;
+  height: 100vh;
+  z-index: 5;
+  pointer-events: none;
+  opacity: 0.5;
+}
+
+.cinematic-travel-line svg {
+  display: block;
+  overflow: visible;
+}
+
+.cinematic-travel-line line {
+  stroke: #d4af37;
+  stroke-width: 1.5;
+}
+
+/* ---------------------------------------------------------
+   9.5 — MOBILE
+   Remove a linha viajante (elemento fixo de borda não agrega
+   em telas pequenas) e reduz a profundidade 3D do Processo para
+   evitar exagero em telas estreitas; o reveal simples continua.
+--------------------------------------------------------- */
+
+@media (max-width: 700px) {
+  .cinematic-travel-line {
+    display: none;
+  }
+
+  .reveal .process-step {
+    transform: translateY(18px);
+  }
+
+  .reveal.active .process-step {
+    transform: translateY(0);
+  }
+}
+
+/* ---------------------------------------------------------
+   9.6 — ACESSIBILIDADE: prefers-reduced-motion
+   js/cinematic.js já não executa nesse caso (nem tilt, nem
+   parallax, nem split-line animado); aqui só garantimos que
+   nada fica com clip/transform residual e que os títulos
+   "split" (se algum dia chegarem a existir sem JS ativo, o que
+   não acontece por construção) ficam sempre totalmente visíveis.
+--------------------------------------------------------- */
+
+@media (prefers-reduced-motion: reduce) {
+  .cinematic-travel-line {
+    display: none;
+  }
+
+  .split-line-inner {
+    transform: none !important;
+    opacity: 1 !important;
+  }
+
+  .reveal .process-step,
+  .reveal.active .process-step {
+    transform: none;
+  }
+
+  .service-icon,
+  .service-card:hover .service-icon,
+  .case-card:hover .service-icon,
+  .service-card h3,
+  .case-card h3,
+  .plan-name,
+  .price-card h3 {
+    transform: none;
+  }
+}
+
+/* =========================================================
+   BLOCO 10 — DOURADO METÁLICO (destaque do H1 do Hero)
+   Substitui o dourado sólido da palavra em destaque ("vendem")
+   por um gradiente metálico animado — sempre dourado, com
+   variações mais claras/escuras e um highlight quase branco que
+   varre o texto continuamente, em loop. Sem cromo/prata e sem
+   amarelo neon. 100% CSS, sem vídeo ou imagem externa. A regra
+   original (cor sólida dourada, em .hero h1 span, lá em cima)
+   continua intocada como fallback para navegadores muito antigos
+   sem suporte a background-clip em texto — daí o @supports abaixo.
+========================================================= */
+
+@supports (background-clip: text) or (-webkit-background-clip: text) {
+
+  .hero h1 span:not(.split-line):not(.split-line-inner) {
+    color: transparent;
+    background-image: linear-gradient(
+      100deg,
+      var(--gold-deep) 0%,
+      var(--gold-dark) 14%,
+      var(--gold) 26%,
+      var(--gold-light) 38%,
+      var(--gold-lighter) 48%,
+      var(--gold-light) 58%,
+      var(--gold) 68%,
+      var(--gold-dark) 80%,
+      var(--gold-deep) 92%,
+      var(--gold-dark) 100%
+    );
+    background-size: 260% 100%;
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    text-shadow: 0 3px 10px rgba(0, 0, 0, 0.35);
+    animation: liquidMetalSweep 4.5s linear infinite;
+  }
+
+  @keyframes liquidMetalSweep {
+    0%   { background-position: 0% 50%; }
+    100% { background-position: -160% 50%; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .hero h1 span:not(.split-line):not(.split-line-inner) {
+      animation: none;
+      background-position: 30% 50%;
+    }
+  }
+}
+
+/* =========================================================
+   BLOCO 12 — DETALHES DOURADOS ANIMADOS (Hero)
+   Substitui o Liquid Gold 3D por uma camada 100% CSS de
+   detalhes dourados vivos e em loop infinito: reflexos que
+   percorrem as linhas finas já existentes em .hero-atmosphere,
+   pequenos pontos de luz que se deslocam, um elemento geométrico
+   flutuante extra e um highlight orbitando a moldura da foto.
+   Nada aqui aparece uma vez só — tudo é `infinite`, com
+   durações e delays diferentes por elemento para dar
+   profundidade sem sincronismo. 100% decorativo (aria-hidden),
+   fica atrás do texto/foto/CTAs do Hero, que continuam intocados.
+========================================================= */
+
+.hero {
+  overflow: hidden; /* contém a leve profundidade dos elementos abaixo */
+}
+
+/* ---------------------------------------------------------
+   12.1 — REFLEXOS QUE PERCORREM AS LINHAS FINAS
+   Um pequeno segmento quase branco que nasce numa ponta da
+   linha, percorre o comprimento dela e desaparece do outro
+   lado — "aceso" só durante a travessia, não uma barra fixa.
+--------------------------------------------------------- */
+
+.atmo-glint {
+  position: absolute;
+  width: 12px;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--gold-lighter), transparent);
+  box-shadow: 0 0 6px rgba(255, 246, 222, 0.55);
+  opacity: 0;
+  pointer-events: none;
+  will-change: transform, opacity;
+}
+
+.atmo-glint-1 {
+  top: 20%;
+  left: 3%;
+  animation: glintTravel1 7s ease-in-out infinite;
+}
+
+.atmo-glint-2 {
+  bottom: 16%;
+  right: 5%;
+  animation: glintTravel2 8.5s ease-in-out infinite 2.4s;
+}
+
+@keyframes glintTravel1 {
+  0%   { transform: translateX(0) rotate(-4deg); opacity: 0; }
+  10%  { opacity: 0.9; }
+  50%  { transform: translateX(122px) rotate(-4deg); opacity: 0.9; }
+  90%  { opacity: 0; }
+  100% { transform: translateX(240px) rotate(-4deg); opacity: 0; }
+}
+
+@keyframes glintTravel2 {
+  0%   { transform: translateX(0) rotate(3deg); opacity: 0; }
+  10%  { opacity: 0.9; }
+  50%  { transform: translateX(-92px) rotate(3deg); opacity: 0.9; }
+  90%  { opacity: 0; }
+  100% { transform: translateX(-180px) rotate(3deg); opacity: 0; }
+}
+
+/* ---------------------------------------------------------
+   12.2 — ELEMENTO GEOMÉTRICO FLUTUANTE
+   Pequeno losango vazado (só borda), flutuando muito
+   suavemente — some do grupo .atmo-shape já existente
+   (.atmo-circle, .atmo-arc), com sua própria velocidade.
+--------------------------------------------------------- */
+
+.atmo-diamond {
+  width: 13px;
+  height: 13px;
+  top: 28%;
+  right: 20%;
+  border-color: rgba(212, 175, 55, 0.4);
+  transform: rotate(45deg);
+  animation: diamondFloat 15s ease-in-out infinite;
+}
+
+@keyframes diamondFloat {
+  0%, 100% { transform: translateY(0) rotate(45deg); opacity: 0.45; }
+  50%      { transform: translateY(-16px) rotate(51deg); opacity: 0.8; }
+}
+
+@media (max-width: 900px) {
+  .atmo-diamond {
+    display: none;
+  }
+}
+
+/* ---------------------------------------------------------
+   12.3 — PONTOS DE LUZ EM DESLOCAMENTO CONTÍNUO
+   Diferente do .atmo-dot estático (rodapé), estes se deslocam
+   devagar em trajetos curtos e orgânicos, cada um com duração,
+   atraso e direção próprios.
+--------------------------------------------------------- */
+
+.atmo-spark {
+  position: absolute;
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: var(--gold-lighter);
+  box-shadow: 0 0 8px rgba(212, 175, 55, 0.7);
+  pointer-events: none;
+  will-change: transform, opacity;
+}
+
+.atmo-spark-1 {
+  top: 16%;
+  left: 58%;
+  animation: sparkDrift1 11s ease-in-out infinite;
+}
+
+.atmo-spark-2 {
+  bottom: 24%;
+  left: 38%;
+  animation: sparkDrift2 13.5s ease-in-out infinite 2s;
+}
+
+.atmo-spark-3 {
+  top: 55%;
+  right: 10%;
+  animation: sparkDrift3 9.5s ease-in-out infinite 1s;
+}
+
+@keyframes sparkDrift1 {
+  0%, 100% { transform: translate(0, 0); opacity: 0.35; }
+  50%      { transform: translate(18px, -22px); opacity: 1; }
+}
+
+@keyframes sparkDrift2 {
+  0%, 100% { transform: translate(0, 0); opacity: 0.3; }
+  50%      { transform: translate(-20px, -14px); opacity: 0.9; }
+}
+
+@keyframes sparkDrift3 {
+  0%, 100% { transform: translate(0, 0); opacity: 0.4; }
+  50%      { transform: translate(-15px, 18px); opacity: 1; }
+}
+
+@media (max-width: 700px) {
+  .atmo-glint,
+  .atmo-spark {
+    display: none;
+  }
+}
+
+/* ---------------------------------------------------------
+   12.4 — HIGHLIGHT ORBITANDO A MOLDURA DA FOTO
+   Um pequeno brilho quase branco que gira lentamente ao redor
+   da foto, por trás dela — reforça a moldura sem criar um
+   halo grande ou um anel visível o tempo todo.
+--------------------------------------------------------- */
+
+.hero-img::after {
+  content: "";
+  position: absolute;
+  inset: -14px;
+  z-index: -1;
+  border-radius: 50%;
+  pointer-events: none;
+  background: radial-gradient(circle 10px at 50% 3%, rgba(255, 246, 222, 0.55), transparent 72%);
+  animation: heroFrameOrbit 12s linear infinite;
+}
+
+@keyframes heroFrameOrbit {
+  to { transform: rotate(360deg); }
+}
+
+/* ---------------------------------------------------------
+   12.5 — ACESSIBILIDADE: prefers-reduced-motion
+   Congela os novos detalhes numa versão estática e discreta,
+   somando-se à mesma media query que já imobiliza o resto da
+   atmosfera do Hero (BLOCO 6, acima).
+--------------------------------------------------------- */
+
+@media (prefers-reduced-motion: reduce) {
+  .atmo-glint {
+    animation: none;
+    opacity: 0;
+  }
+
+  .atmo-diamond,
+  .atmo-spark {
+    animation: none;
+    opacity: 0.35;
+    transform: none;
+  }
+
+  .hero-img::after {
+    animation: none;
+  }
 }
