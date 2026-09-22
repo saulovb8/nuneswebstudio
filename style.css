@@ -5564,3 +5564,91 @@ body {
     animation: none;
   }
 }
+
+/* =========================================================
+   BLOCO 13 — PREÇOS: ELEVAÇÃO PREMIUM (100% aditivo)
+   Nada acima foi removido ou alterado — nenhum preço, texto,
+   link ou classe existente muda de lugar. Este bloco só estende
+   ao .price-card o mesmo tratamento que os cards de Serviços já
+   receberam no BLOCO 7.4 (spotlight mínimo mesmo sem hover,
+   ícone com anel técnico giratório) e acrescenta duas
+   microinterações que a seção ainda não tinha: destaque do card
+   inteiro no foco por teclado (:focus-within) e uma seta de CTA
+   que desliza sutilmente no hover/foco. O glint de luz que
+   percorre o topo do card, o gradiente metálico do nome do
+   plano, a lista com check dourado e as variações por plano
+   (basic/premium/business) continuam exatamente como estão.
+========================================================= */
+
+/* 13.1 — Presença mínima do spotlight mesmo sem hover, igual ao
+   .service-card — o JS de tilt (js/cinematic.js) continua sendo
+   o único responsável por levar --spot-o a 1 no hover. */
+.price-card {
+  --spot-o: 0.1;
+}
+
+/* 13.2 — Ícone do plano: reaproveita a classe .service-icon
+   (mesmo tamanho, borda e fundo já usados em Serviços) só com
+   espaço abaixo para não colar no nome do plano. */
+.price-card .service-icon {
+  position: relative;
+  margin-bottom: 22px;
+}
+
+.price-card .service-icon::after {
+  content: "";
+  position: absolute;
+  inset: -6px;
+  border: 1px solid rgba(212, 175, 55, 0.25);
+  border-radius: 50%;
+  animation: techSpin 40s linear infinite;
+}
+
+.price-card:hover .service-icon,
+.price-card:focus-within .service-icon {
+  transform: translateZ(22px) translateY(-3px) scale(1.07);
+}
+
+/* 13.3 — Destaque elegante do card inteiro no foco por teclado
+   (tab até o botão "Solicitar orçamento"), complementando o
+   outline já existente em a:focus-visible sem substituí-lo. */
+.price-card:focus-within {
+  border-color: rgba(212, 175, 55, 0.6);
+  box-shadow:
+    0 0 0 1px rgba(212, 175, 55, 0.25),
+    0 20px 50px -20px rgba(0, 0, 0, 0.6);
+}
+
+/* 13.4 — CTA: a seta desliza sutilmente no hover/foco, sem
+   alterar cor, fundo ou tamanho do botão. */
+.btn-arrow {
+  display: inline-block;
+  transition: transform 0.3s ease;
+}
+
+.price-btn:hover .btn-arrow,
+.price-btn:focus-visible .btn-arrow {
+  transform: translateX(4px);
+}
+
+/* 13.5 — prefers-reduced-motion: remove só as novas rotações/
+   translações deste bloco; cor, borda e foco continuam normais. */
+@media (prefers-reduced-motion: reduce) {
+  .price-card .service-icon::after {
+    animation: none;
+  }
+
+  .price-card:hover .service-icon,
+  .price-card:focus-within .service-icon {
+    transform: none;
+  }
+
+  .btn-arrow {
+    transition: none;
+  }
+
+  .price-btn:hover .btn-arrow,
+  .price-btn:focus-visible .btn-arrow {
+    transform: none;
+  }
+}
