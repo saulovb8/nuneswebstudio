@@ -4450,7 +4450,8 @@ button:focus-visible {
 .cases-title > span:first-child,
 .pricing-title > span:first-child,
 .guide-title > span:first-child,
-.faq-title > span:first-child {
+.faq-title > span:first-child,
+.cta-title > span:first-child {
   font-family: var(--mono);
   font-size: 12px;
   font-weight: 500;
@@ -4466,7 +4467,8 @@ button:focus-visible {
 .cases-title > span:first-child::before,
 .pricing-title > span:first-child::before,
 .guide-title > span:first-child::before,
-.faq-title > span:first-child::before {
+.faq-title > span:first-child::before,
+.cta-title > span:first-child::before {
   content: "";
   width: 22px;
   height: 1px;
@@ -5650,5 +5652,185 @@ body {
   .price-btn:hover .btn-arrow,
   .price-btn:focus-visible .btn-arrow {
     transform: none;
+  }
+}
+
+/* =========================================================
+   BLOCO 14 — CTA FINAL: ENCERRAMENTO CINEMATOGRÁFICO
+   (100% aditivo). Nova seção entre FAQ e Rodapé — o <footer>
+   (marca, navegação, contato, copyright) continua exatamente
+   como está, intocado; esta seção só antecede o fechamento da
+   página com um convite direto ao orçamento.
+
+   Reaproveita integralmente o que já existe, sem recriar nada:
+   - título por linhas: .cta-title h2 entra na lista já usada
+     por Sobre/Serviços/Processo em js/cinematic.js (BLOCO 9.1);
+   - subtítulo com blur/scroll: .cta-title p entra na mesma
+     scrubTextReveal() já usada em Sobre/Processo/Preços;
+   - profundidade 3D na entrada: automática, via .reveal já
+     genérico (BLOCO 8.5 do CSS cobre qualquer seção nova);
+   - reversibilidade no scroll: automática, o observer de
+     js/script.js já observa qualquer elemento .reveal;
+   - botão de orçamento: reaproveita .btn tal como está (mesmo
+     botão do Hero — já tem lift, brilho, reflexo e press);
+   - decorativo: mesmo .section-deco usado em Serviços/
+     Diferenciais/Preços, com elementos próprios (.cta-glow,
+     .cta-line, .cta-ring) na mesma técnica visual do .closing-*
+     já aprovado no rodapé — instâncias novas, não o duplicam.
+========================================================= */
+
+/* 14.1 — Base da seção: mesma textura técnica e fundo já usados
+   em Preços/Rodapé, mantendo preto dominante + dourado só em
+   detalhe. */
+.cta {
+  position: relative;
+  z-index: 0;
+  padding: 140px 8%;
+  text-align: center;
+  overflow: hidden;
+  background:
+    var(--tech-grid),
+    radial-gradient(60% 70% at 50% 0%, rgba(212, 175, 55, 0.09), rgba(212, 175, 55, 0) 65%),
+    var(--bg-black);
+  border-top: 1px solid rgba(212, 175, 55, 0.1);
+}
+
+/* 14.2 — Título, subtítulo e CTA: mesma tipografia/hierarquia
+   das demais seções (about/services/process), só centralizada. */
+.cta-title {
+  position: relative;
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.cta-title h2 {
+  font-size: 95px;
+  line-height: 0.95;
+  color: #fff;
+  margin-top: 20px;
+  font-weight: 800;
+}
+
+.cta-title h2 span:not(.split-line):not(.split-line-inner) {
+  color: #d4af37;
+}
+
+.cta-title .title-line {
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.cta-title p {
+  color: #8b8b8b;
+  margin-top: 26px;
+  font-size: 18px;
+  line-height: 1.7;
+  max-width: 560px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.cta-btn {
+  margin-top: 44px;
+}
+
+/* 14.3 — Entrada do botão: pequeno movimento vertical + escala,
+   mesma técnica de .reveal/.reveal.active já usada em elementos
+   como .experience-box e .guide-item (BLOCO 6.4). */
+.reveal .cta-btn {
+  opacity: 0;
+  transform: translateY(24px) scale(0.94);
+  transition:
+    opacity 0.8s cubic-bezier(.16, .84, .44, 1) 0.3s,
+    transform 0.8s cubic-bezier(.16, .84, .44, 1) 0.3s;
+}
+
+.reveal.active .cta-btn {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+}
+
+/* 14.4 — Camada decorativa: brilho central + duas linhas finas
+   convergindo + um anel técnico, mesma linguagem visual do
+   .closing-* do rodapé (glow discreto, linhas em respiração
+   lenta via atmoBreathe, anel girando via techSpin). */
+.cta-glow {
+  position: absolute;
+  width: 900px;
+  height: 420px;
+  left: 50%;
+  top: -80px;
+  transform: translateX(-50%);
+  background: radial-gradient(ellipse, rgba(212, 175, 55, 0.14), rgba(212, 175, 55, 0) 70%);
+  filter: blur(60px);
+  pointer-events: none;
+}
+
+.cta-line {
+  position: absolute;
+  height: 1px;
+  width: 30%;
+  top: 50%;
+  background: linear-gradient(90deg, transparent, rgba(212, 175, 55, 0.22), transparent);
+  animation: atmoBreathe 15s ease-in-out infinite;
+  pointer-events: none;
+}
+
+.cta-line-1 { left: 0; transform: rotate(-2deg); }
+.cta-line-2 { right: 0; transform: rotate(2deg); animation-delay: 3s; }
+
+.cta-ring {
+  top: -60px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 320px;
+  height: 320px;
+  animation: techSpin 80s linear infinite;
+}
+
+/* 14.5 — Responsivo: menos elementos decorativos e parallax mais
+   discreto no tablet/mobile, sem perder legibilidade nem CTA. */
+@media (max-width: 1100px) {
+  .cta-title h2 {
+    font-size: 65px;
+  }
+
+  .cta-ring {
+    display: none;
+  }
+}
+
+@media (max-width: 700px) {
+  .cta {
+    padding: 90px 6%;
+  }
+
+  .cta-title h2 {
+    font-size: 48px;
+  }
+
+  .cta-title p {
+    font-size: 16px;
+  }
+
+  .cta-line-2 {
+    display: none;
+  }
+}
+
+/* 14.6 — prefers-reduced-motion: remove só o movimento novo
+   deste bloco (respiração das linhas e a entrada do botão);
+   o anel (.tech-ring) já é congelado pela regra existente no
+   BLOCO 7.10. Conteúdo, cor e contraste continuam normais. */
+@media (prefers-reduced-motion: reduce) {
+  .cta-line {
+    animation: none;
+  }
+
+  .reveal .cta-btn,
+  .reveal.active .cta-btn {
+    transition: none;
+    transform: none;
+    opacity: 1;
   }
 }

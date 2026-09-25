@@ -78,7 +78,7 @@
 
   // Títulos de cada seção: entram (e voltam) conforme o scroll.
   var sectionHeadings = document.querySelectorAll(
-    ".about-title h2, .services-title h2, .process-title h2, .cases-title h2, .pricing-title h2, .guide-title h2, .faq-title h2"
+    ".about-title h2, .services-title h2, .process-title h2, .cases-title h2, .pricing-title h2, .guide-title h2, .faq-title h2, .cta-title h2"
   );
 
   sectionHeadings.forEach(function (heading) {
@@ -133,6 +133,7 @@
   scrubTextReveal(".about-text p");
   scrubTextReveal(".process-title p");
   scrubTextReveal(".pricing-title p");
+  scrubTextReveal(".cta-title p");
 
   /* ---------------------------------------------------------
      9.3 — PARALLAX DE FUNDO COM VELOCIDADES DIFERENTES
@@ -152,7 +153,10 @@
       { selector: ".deco-corner-bl", speed: 25 },
       { selector: ".closing-glow", speed: 30 },
       { selector: ".closing-line-1", speed: -20 },
-      { selector: ".closing-line-2", speed: 20 }
+      { selector: ".closing-line-2", speed: 20 },
+      { selector: ".cta-glow", speed: 30 },
+      { selector: ".cta-line-1", speed: -20 },
+      { selector: ".cta-line-2", speed: 20 }
     ];
 
     parallaxTargets.forEach(function (target) {
