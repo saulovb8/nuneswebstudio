@@ -1574,28 +1574,6 @@ footer {
   0 0 60px rgba(212,175,55,0.35);
 }
 
-.popular-tag{
-  position: absolute;
-
-  top: 25px;
-  left: 50%;
-
-  transform: translateX(-50%);
-
-  background: #d4af37;
-  color: #000;
-
-  padding: 10px 22px;
-
-  border-radius: 999px;
-
-  font-size: 12px;
-  font-weight: 700;
-  letter-spacing: 2px;
-
-  z-index: 2;
-}
-
 .plan-name{
   color: #d4af37;
   font-size: 14px;
@@ -1798,9 +1776,6 @@ footer {
   max-height: 200px;
 }
 
-.faq-item.active .faq-question span{
-  transform: rotate(45deg);
-}
 
 @media(max-width:768px){
 
@@ -3045,60 +3020,6 @@ html {
 
 
 /* ========================================
-   SELO MAIS SOLICITADO
-======================================== */
-
-.popular-tag {
-
-  position: absolute;
-
-  top: 18px;
-  right: 18px;
-
-  padding: 7px 12px;
-
-  border-radius: 50px;
-
-  background: linear-gradient(
-    135deg,
-    #8f6b16,
-    #d4af37,
-    #fff2a8,
-    #d4af37,
-    #8f6b16
-  );
-
-  background-size: 200% 100%;
-
-  color: #080808;
-
-  font-size: 9px;
-
-  font-weight: 900;
-
-  letter-spacing: 1px;
-
-  box-shadow:
-    0 0 18px rgba(212, 175, 55, 0.22);
-
-  animation: tagMetal 4s linear infinite;
-}
-
-
-@keyframes tagMetal {
-
-  0% {
-    background-position: 150% center;
-  }
-
-  100% {
-    background-position: -150% center;
-  }
-
-}
-
-
-/* ========================================
    RESPONSIVO
 ======================================== */
 
@@ -3168,16 +3089,6 @@ html {
     min-height: auto;
 
     padding: 35px 25px;
-  }
-
-
-  .popular-tag {
-
-    top: 15px;
-
-    right: 15px;
-
-    font-size: 8px;
   }
 
 }
@@ -5832,5 +5743,139 @@ body {
     transition: none;
     transform: none;
     opacity: 1;
+  }
+}
+/* =========================================================
+   BLOCO 15 — HERO MOBILE: composição texto → botões → foto
+   No mobile o .hero vira coluna (flex-direction: column), então
+   a foto sempre vem depois do .hero-text. O que deixava a foto
+   "solta" e os botões desalinhados era:
+   - .btn-secondary { margin-left: 30px } (pensado para o desktop,
+     lado a lado) empurrando o 2º botão para a direita ao quebrar;
+   - gap: 40px do .hero + margin-top: 30px do .hero-img somados,
+     afastando a foto ~70px dos botões;
+   - translate 3D (translateZ 32px) do BLOCO 8.2 na foto, que com
+     a perspective do .hero a amplia e desloca levemente.
+   Desktop (> 900px) não é afetado: .hero-actions é um bloco
+   comum e os botões continuam inline, exatamente como antes.
+   Foto: mesmo arquivo, mesmo tamanho e proporção, sem corte.
+========================================================= */
+
+@media (max-width: 900px) {
+  .hero {
+    gap: 36px;
+  }
+
+  .hero-actions {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 14px;
+    width: 100%;
+    max-width: 320px;
+    margin: 26px auto 0;
+  }
+
+  .hero-actions .btn,
+  .hero-actions .btn-secondary {
+    width: 100%;
+    margin-left: 0;
+  }
+
+  .hero-text {
+    translate: none;
+  }
+
+  .hero-img {
+    margin-top: 0;
+    translate: none;
+  }
+}
+
+/* =========================================================
+   BLOCO 16 — MOBILE: sem rolagem horizontal
+   Causas do overflow (a página ficava com ~623px em telas de
+   390px):
+   - .header com padding lateral de 60px + menu (gap 45px,
+     letter-spacing 3px) + .btn-header na mesma linha;
+   - .premium-box com width: 500px fixo;
+   - .step-content (Processo) sem min-width: 0 dentro do flex.
+   Os brilhos decorativos (.cta-glow, .closing-glow, auroras)
+   já são recortados pelos pais com overflow: hidden.
+   Desktop não é afetado.
+========================================================= */
+
+@media (max-width: 700px) {
+  .header,
+  .header.is-scrolled {
+    flex-wrap: wrap;
+    justify-content: center;
+    row-gap: 10px;
+    padding: 12px 16px;
+  }
+
+  .nav {
+    flex: 0 1 100%;
+    justify-content: center;
+    gap: 18px;
+  }
+
+  .nav a {
+    font-size: 11px;
+    letter-spacing: 1.5px;
+  }
+
+  /* No mobile o cabeçalho fica só com o menu; o CTA de orçamento
+     continua no Hero ("Solicitar Orçamento") e no fim da página. */
+  .btn-header {
+    display: none;
+  }
+
+  .premium-box {
+    display: flex;
+    width: fit-content;
+    margin: 0 auto;
+    max-width: calc(100% - 32px);
+    height: auto;
+    padding: 14px 20px;
+    font-size: 13px;
+    letter-spacing: 3px;
+  }
+
+  .step-content {
+    min-width: 0;
+    flex: 1;
+  }
+
+  /* Sem "overflow-x: clip" em html/body: no Safari/iOS o clip
+     também recorta o eixo Y e a página ficava em branco. A rede
+     de segurança contra rolagem horizontal é o
+     "body { overflow-x: hidden }" do início do arquivo. */
+}
+
+/* =========================================================
+   BLOCO 17 — TÍTULOS DE SEÇÃO: sem letra cortada no mobile
+   A máscara do split-line (.split-line { overflow: hidden })
+   recortava a última letra das palavras mais longas que a
+   coluna em 390px: "Desenvolvedor" (371px em 343px) e
+   "Profissionalismo" (344px em 312px). Aqui a fonte desses dois
+   títulos acompanha a largura da tela no mobile, e a máscara
+   ganha uma pequena folga para itálico e descendentes, sem
+   alterar o layout (padding compensado por margem negativa).
+   Desktop não é afetado.
+========================================================= */
+
+.split-line {
+  padding: 0 0.08em 0.1em;
+  margin: 0 -0.08em -0.1em;
+}
+
+@media (max-width: 700px) {
+  .about-title h2 {
+    font-size: clamp(32px, 10.5vw, 48px);
+  }
+
+  .cases-title h2 {
+    font-size: clamp(26px, 9vw, 40px);
   }
 }

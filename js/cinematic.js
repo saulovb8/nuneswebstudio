@@ -57,6 +57,11 @@
       .join("");
 
     heading.dataset.splitDone = "true";
+
+    // A varredura por clip-path em CSS (fallback sem GSAP) disputaria
+    // com este efeito e recortaria a última letra; aqui ela sai.
+    heading.style.clipPath = "none";
+
     return heading.querySelectorAll(".split-line-inner");
   }
 
@@ -76,13 +81,47 @@
     });
   }
 
-  // Títulos de cada seção: entram (e voltam) conforme o scroll.
+  /* Títulos de cada seção: entram conforme o scroll e ficam
+     visíveis durante TODA a leitura da seção.
+     - Entrada (descendo): quando o topo do título chega a 88% da tela.
+     - Saída (descendo): só quando o FIM da seção sobe até 15% da tela,
+       ou seja, quando a seção já está quase toda para trás.
+     - Voltando (subindo): o título reaparece assim que o fim da seção
+       volta à tela, e só some de novo quando o próprio título desce
+       abaixo de 88% da tela (a seção saindo por baixo).
+     Entrada e saída ficam em pontos distantes, então não há "pisca"
+     com poucos pixels de rolagem. */
   var sectionHeadings = document.querySelectorAll(
     ".about-title h2, .services-title h2, .process-title h2, .cases-title h2, .pricing-title h2, .guide-title h2, .faq-title h2, .cta-title h2"
   );
 
+  // Posição de layout (offsetTop), não a visual: no desktop as seções
+  // têm perspectiva/translateZ, e getBoundingClientRect devolveria a
+  // caixa projetada em 3D, deslocando os pontos de entrada/saída.
+  var pageTop = function (el) {
+    var y = 0;
+    while (el) {
+      y += el.offsetTop;
+      el = el.offsetParent;
+    }
+    return y;
+  };
+
   sectionHeadings.forEach(function (heading) {
     var lines = splitHeadingLines(heading);
+    var section = heading.closest("section") || heading.parentElement;
+
+    var titleEnter = function () {
+      return pageTop(heading) - window.innerHeight * 0.88;
+    };
+
+    // Garante uma faixa mínima de meia tela entre entrada e saída,
+    // mesmo numa seção curta.
+    var sectionLeave = function () {
+      var leave = pageTop(section) + section.offsetHeight - window.innerHeight * 0.15;
+      return Math.max(leave, titleEnter() + window.innerHeight * 0.5);
+    };
+
     gsap.set(lines, { yPercent: 115, opacity: 0, filter: "blur(8px)" });
     gsap.to(lines, {
       yPercent: 0,
@@ -93,8 +132,8 @@
       stagger: 0.1,
       scrollTrigger: {
         trigger: heading,
-        start: "top 88%",
-        end: "top 45%",
+        start: titleEnter,
+        end: sectionLeave,
         toggleActions: "play reverse play reverse"
       }
     });
@@ -364,5 +403,40 @@
   window.addEventListener("load", function () {
     ScrollTrigger.refresh();
   });
+
+  // As fontes do Google podem terminar depois do "load" e mudam a
+  // altura dos títulos/textos.
+  if (document.fonts && document.fonts.ready) {
+    document.fonts.ready.then(function () {
+      ScrollTrigger.refresh();
+    });
+  }
+
+  // Abrir/fechar itens do FAQ e do "Entenda cada serviço" muda a altura
+  // da seção; sem recalcular, o ponto de saída do título ficaria antigo.
+  if ("ResizeObserver" in window) {
+    var refreshTimer = null;
+    var knownHeights = new Map();
+
+    var sectionResizeObserver = new ResizeObserver(function (entries) {
+      var changed = entries.some(function (entry) {
+        var height = Math.round(entry.contentRect.height);
+        var previous = knownHeights.get(entry.target);
+        knownHeights.set(entry.target, height);
+        return previous !== undefined && previous !== height;
+      });
+
+      if (!changed) return;
+
+      clearTimeout(refreshTimer);
+      refreshTimer = setTimeout(function () {
+        ScrollTrigger.refresh();
+      }, 250);
+    });
+
+    document.querySelectorAll("body > section").forEach(function (section) {
+      sectionResizeObserver.observe(section);
+    });
+  }
 
 })();

@@ -1,3 +1,13 @@
+/* Indicador "+/−" de uma pergunta: é sempre o <span> filho DIRETO
+   do botão. O emoji do título fica dentro do <h3> e nunca é tocado. */
+const getToggleIndicator = button => button.querySelector(":scope > span[aria-hidden]");
+
+const setToggleState = (button, isOpen) => {
+  button.setAttribute("aria-expanded", isOpen ? "true" : "false");
+  const indicator = getToggleIndicator(button);
+  if (indicator) indicator.textContent = isOpen ? "−" : "+";
+};
+
 /* ACORDEÃO — ENTENDA CADA SERVIÇO (abre um item por vez) */
 const guideQuestions = document.querySelectorAll(".guide-question");
 
@@ -10,14 +20,13 @@ guideQuestions.forEach(question => {
 
     document.querySelectorAll(".guide-item").forEach(el => {
       el.classList.remove("active");
-      el.querySelector(".guide-question").setAttribute("aria-expanded", "false");
-      el.querySelector(".guide-question span[aria-hidden]").textContent = "+";
+      const elQuestion = el.querySelector(".guide-question");
+      if (elQuestion) setToggleState(elQuestion, false);
     });
 
     if (!isActive) {
       item.classList.add("active");
-      question.setAttribute("aria-expanded", "true");
-      question.querySelector("span[aria-hidden]").textContent = "−";
+      setToggleState(question, true);
     }
 
   });
@@ -32,7 +41,7 @@ document.querySelectorAll(".faq-question").forEach(button => {
     const item = button.parentElement;
     const isActive = item.classList.toggle("active");
 
-    button.setAttribute("aria-expanded", isActive ? "true" : "false");
+    setToggleState(button, isActive);
 
   });
 
@@ -58,6 +67,58 @@ if (reveals.length && "IntersectionObserver" in window) {
   });
 
   reveals.forEach(element => observer.observe(element));
+
+}
+
+/* ÂNCORA "PLANOS" DO MENU — a seção de preços é a mais alta do
+   site; ao chegar nela pelo menu, no mobile menos de 15% dela
+   fica na tela e o reveal acima (threshold 0.15) só a mostrava
+   depois de mais um pouco de rolagem. Após o clique, espera a
+   rolagem suave terminar e aciona o mesmo reveal. */
+const pricingSection = document.getElementById("pricing");
+const pricingNavLink = document.querySelector(".nav a[href='#pricing']");
+
+if (pricingSection && pricingNavLink) {
+
+  pricingNavLink.addEventListener("click", () => {
+
+    const startedAt = performance.now();
+    let lastY = null;
+    let stillFrames = 0;
+
+    const revealWhenSettled = () => {
+      const y = window.scrollY;
+      stillFrames = y === lastY ? stillFrames + 1 : 0;
+      lastY = y;
+
+      const arrived = pricingSection.getBoundingClientRect().top < window.innerHeight;
+
+      if (arrived && stillFrames >= 6) {
+        pricingSection.classList.add("active");
+
+        // Como o observer principal não registrou esta entrada, ele
+        // também não registraria a saída: remove aqui quando a seção
+        // sai totalmente da tela, igual às demais seções.
+        const leaveObserver = new IntersectionObserver(([entry]) => {
+          if (!entry.isIntersecting) {
+            pricingSection.classList.remove("active");
+            leaveObserver.disconnect();
+          }
+        });
+
+        leaveObserver.observe(pricingSection);
+        return;
+      }
+
+      // Segurança: nunca fica esperando indefinidamente.
+      if (performance.now() - startedAt < 3000) {
+        requestAnimationFrame(revealWhenSettled);
+      }
+    };
+
+    requestAnimationFrame(revealWhenSettled);
+
+  });
 
 }
 
